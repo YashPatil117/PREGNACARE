@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Doctor Registration</title>
+  <link rel="stylesheet" href="doctor-registration-style.css">
+</head>
+<body>
+  <!-- Top Section with Logo & Title -->
+  <div class="top-section">
+    <div class="header-container">
+      <h1>Doctor Registration Hub</h1>
+      <img src="pregnacare.png" alt="Logo" class="logo">
+    </div>
+    <div class="wave-background"></div>
+  </div>
+
+  <!-- Main Content Section -->
+  <div class="main-content">
+    <!-- Registration Form -->
+    <div class="form-section">
+      <div class="form-container">
+        <h2>Doctor Registration</h2>
+        <form id="doctor-registration-form">
+          <label for="name">Full Name:</label>
+          <input type="text" id="name" placeholder="Enter your full name" required>
+
+          <label for="mobile">Mobile Number:</label>
+          <input type="tel" id="mobile" placeholder="Enter mobile number" required>
+
+          <label for="email">Email:</label>
+          <input type="email" id="email" placeholder="Enter email" required>
+
+          <label for="specialization">Specialization:</label>
+          <input type="text" id="specialization" placeholder="Enter your specialization" required>
+
+          <label for="doctor-id">Doctor ID:</label>
+          <input type="text" id="doctor-id" placeholder="Enter your Doctor ID" required>
+
+          <button type="submit">Register</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Right Section with an Image -->
+    <div class="image-section">
+      <img src="doctor image.jpg" alt="Doctor Profile" class="doctor-image">
+    </div>
+  </div>
+
+  <script src="doctor-registration.js"></script>
+</body>
+</html>
