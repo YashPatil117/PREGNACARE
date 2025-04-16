@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PREGNACARE - Patient Registration</title>
+  <link rel="stylesheet" href="patient-registration-style.css">
+</head>
+<body>
+  <!-- Blue Top Section with Logo & Title -->
+  <div class="top-section">
+    <div class="header-container">
+      <h1>PREGNACARE</h1>
+      <img src="logo.png" alt="PregnaCare Logo" class="logo">
+    </div>
+    <!-- Wavy Blue Divider -->
+    <div class="wave-background"></div>
+  </div>
+
+  <!-- Main Content Section with Form on Left and Image on Right -->
+  <div class="main-content">
+    <!-- Registration Form Section (Left) -->
+    <div class="form-section">
+      <div class="form-container">
+        <h2>Patient Registration</h2>
+        <form>
+          <label>Full Name:</label>
+          <input type="text" placeholder="Enter your name" required>
+
+          <label>Age:</label>
+          <input type="number" placeholder="Enter age" required>
+
+          <label>Phone Number:</label>
+          <input type="tel" placeholder="Enter phone number" required>
+
+          <label>Address:</label>
+          <textarea placeholder="Enter address"></textarea>
+
+          <label>Expected Due Date:</label>
+          <input type="date" required>
+
+          <button type="submit">Register</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Image Section (Right) -->
+    <div class="image-section">
+      <img src="pregnant woman.jpeg" alt="Pregnant Mother" class="pregnant-image">
+    </div>
+  </div>
+
+  <script src="patient-registration.js"></script>
+</body>
+</html>
