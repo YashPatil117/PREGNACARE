@@ -8,7 +8,9 @@ document.getElementById('mother-registration-form').addEventListener('submit', a
 
   // Gather form data
   const formData = {
-    name: document.getElementById('name').value,
+    fname: document.getElementById('name1').value,
+    mname: document.getElementById('name2').value,
+    lname: document.getElementById('name3').value,
     age: document.getElementById('age').value,
     dob: document.getElementById('dob').value,
     mobile: document.getElementById('mobile').value,
@@ -27,7 +29,9 @@ document.getElementById('mother-registration-form').addEventListener('submit', a
 
     // Store additional data in Firestore (e.g., the user's profile)
     await setDoc(doc(db, "women", uid), {
-      name: formData.name,
+      fname: formData.name1,
+      mname: formData.name2,
+      lname: formData.name3,
       age: formData.age,
       dob: formData.dob,
       mobile: formData.mobile,
