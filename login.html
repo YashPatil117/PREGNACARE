@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PREGNACARE - Login</title>
+  <link rel="stylesheet" href="login.css">
+</head>
+<body>
+  <div class="top-section">
+    <div class="header-container">
+      <h1>PREGNACARE</h1>
+      <img src="logo.png" alt="PregnaCare Logo" class="logo">
+    </div>
+    <div class="wave-background"></div>
+  </div>
+
+  <!-- Main Login Section -->
+  <div class="main-content">
+    <div class="form-section">
+      <div class="form-container">
+        <h2>Login</h2>
+
+        <!-- Login Form -->
+        <form id="login-form">
+          <label>Email:</label>
+          <input type="email" name="email" placeholder="Enter your email" required>
+
+          <button type="submit">Send Verification Email</button>
+        </form>
+
+        <!-- Redirect to Registration -->
+        <div class="register-redirect">
+          <p>Don't have an account? <a href="patient-registration.html">Register here</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Link to external JavaScript file -->
+  <script type="module" src="login.js"></script>
+</body>
+</html>
