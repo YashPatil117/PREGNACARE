@@ -4,6 +4,32 @@
   <meta charset="UTF-8">
   <title>PREGNACARE - Patient Registration</title>
   <link rel="stylesheet" href="patient-registration-style.css">
+  
+  <!-- Firebase App (the core Firebase SDK) -->
+  <script type="module">
+    // Import the Firebase functions you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+    // Your Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyAAdjeTlV3QD7RNuhJeuIo8Vp2tftjbE1k",
+      authDomain: "pregnacare-70aed.firebaseapp.com",
+      projectId: "pregnacare-70aed",
+      storageBucket: "pregnacare-70aed.firebasestorage.app",
+      messagingSenderId: "1:375969305451:web:82d4e1f90264cfa3f6f22e",
+      appId:"G-34LJE5R27W"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Attach to window for access in other scripts
+    window.firebaseStuff = { auth, db, createUserWithEmailAndPassword, sendEmailVerification, doc, setDoc };
+  </script>
 </head>
 <body>
   <!-- Blue Top Section with Logo & Title -->
@@ -22,24 +48,34 @@
     <div class="form-section">
       <div class="form-container">
         <h2>Patient Registration</h2>
-        <form>
+
+        <!-- ✅ Form tag with proper structure -->
+        <form id="patient-registration-form">
           <label>Full Name:</label>
-          <input type="text" placeholder="Enter your name" required>
+          <input type="text" name="name" placeholder="Enter your name" required>
 
           <label>Age:</label>
-          <input type="number" placeholder="Enter age" required>
+          <input type="number" name="age" placeholder="Enter age" required>
 
           <label>Phone Number:</label>
-          <input type="tel" placeholder="Enter phone number" required>
+          <input type="tel" name="phone" placeholder="Enter phone number" required>
+
+          <label>Email:</label>
+          <input type="email" name="email" placeholder="Enter Email address" required>
 
           <label>Address:</label>
-          <textarea placeholder="Enter address"></textarea>
+          <textarea name="address" placeholder="Enter address" required></textarea>
 
           <label>Expected Due Date:</label>
-          <input type="date" required>
+          <input type="date" name="dueDate" required>
 
           <button type="submit">Register</button>
         </form>
+
+        <!-- Login Redirect Section -->
+        <div class="login-redirect">
+          <p>Already have an account? <a href="login.html">Login here</a></p>
+        </div>
       </div>
     </div>
 
@@ -49,6 +85,6 @@
     </div>
   </div>
 
-  <script src="patient-registration.js"></script>
+  <script type="module" src="patient-registration.js"></script>
 </body>
 </html>
