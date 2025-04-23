@@ -1,43 +1,51 @@
-import { getAuth, sendEmailVerification, fetchSignInMethodsForEmail } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+// Import Firebase modules
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
+// Firebase configuration (replace with your actual Firebase config)
+const firebaseConfig = {
+  apiKey: "AIzaSyAAdjeTlV3QD7RNuhJeuIo8Vp2tftjbE1k",
+  authDomain: "pregnacare-70aed.firebaseapp.com",
+  projectId: "pregnacare-70aed",
+  storageBucket: "pregnacare-70aed.firebasestorage.app",
+  messagingSenderId: "375969305451",
+  appId: "1:375969305451:web:82d4e1f90264cfa3f6f22e",
+  measurementId: "G-34LJE5R27W"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
+// Get auth instance
+const auth = getAuth(app);
+
+// Handle login logic
 document.addEventListener('DOMContentLoaded', function () {
   const form = document.querySelector('#login-form');
   const emailInput = form.querySelector('input[name="email"]');
+  const passwordInput = form.querySelector('input[name="password"]');
 
-  // Handle form submission
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    
+
     const email = emailInput.value.trim();
-    
-    if (!email) {
-      alert("Please enter a valid email.");
+    const password = passwordInput.value.trim();
+
+    if (!email || !password) {
+      alert("Please enter both email and password.");
       return;
     }
 
-    const auth = getAuth();
-
     try {
-      // Check if the email is registered
-      const signInMethods = await fetchSignInMethodsForEmail(auth, email);
-      
-      if (signInMethods.length === 0) {
-        alert("This email is not registered.");
-        return;
-      }
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
 
-      // Proceed with sending verification email
-      const user = await auth.signInWithEmailLink(email);
-
-      // Check if email is verified
-      if (!user.user.emailVerified) {
-        // Send verification email if not verified
-        await sendEmailVerification(user.user);
+      if (!user.emailVerified) {
+        await sendEmailVerification(user);
         alert("A new verification email has been sent to your email address. Please verify your email to proceed.");
       } else {
         alert("Login successful. Your email is already verified. Welcome back!");
-        // Redirect to mother info page after successful login and email verification
-        window.location.href = "mother-info.html";
+        window.location.href = "mother-registration.html";
       }
     } catch (error) {
       console.error("Error during login:", error.message);

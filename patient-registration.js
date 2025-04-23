@@ -3,13 +3,14 @@ import { setDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-
 import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
 document.addEventListener('DOMContentLoaded', function () {
-  const form = document.querySelector('form');
+  const form = document.querySelector('#patient-registration-form');
   const nameInput = document.querySelector('input[name="name"]');
   const ageInput = document.querySelector('input[name="age"]');
   const phoneInput = document.querySelector('input[name="phone"]');
   const addressTextarea = document.querySelector('textarea[name="address"]');
   const dueDateInput = document.querySelector('input[name="dueDate"]');
   const emailInput = document.querySelector('input[name="email"]');
+  const passwordInput = document.querySelector('input[name="password"]');
 
   // Registration function for the mother
   async function registerMother(data) {
@@ -27,6 +28,7 @@ document.addEventListener('DOMContentLoaded', function () {
         createdAt: new Date()
       });
 
+      // Show success modal after registration
       showSuccessModal();
     } catch (error) {
       console.error("Registration error:", error);
@@ -42,7 +44,8 @@ document.addEventListener('DOMContentLoaded', function () {
       phoneInput.value.trim() &&
       addressTextarea.value.trim() &&
       dueDateInput.value.trim() &&
-      emailInput.value.trim()
+      emailInput.value.trim() &&
+      passwordInput.value.trim()
     );
   }
 
@@ -61,7 +64,8 @@ document.addEventListener('DOMContentLoaded', function () {
       phone: phoneInput.value,
       address: addressTextarea.value,
       dueDate: dueDateInput.value,
-      email: emailInput.value
+      email: emailInput.value,
+      password: passwordInput.value
     };
 
     registerMother(formData);
@@ -89,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function () {
         text-align: center;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
         <h2>Successfully Registered!</h2>
-        <p>You have successfully registered. Please click continue to proceed.</p>
+        <p>You have successfully registered. Please click continue to proceed to login.</p>
         <button id="continue-button" style="
           background-color: #3498db;
           color: white;
@@ -105,9 +109,20 @@ document.addEventListener('DOMContentLoaded', function () {
     modal.innerHTML = modalContent;
     document.body.appendChild(modal);
 
-    document.getElementById('continue-button').addEventListener('click', function () {
-      window.location.href = 'mother-dashboard.html';
-    });
+    // Debugging: Check if modal is being created
+    console.log("Modal is being created!");
+
+    // Ensure button click listener is attached
+    const continueButton = document.getElementById('continue-button');
+    if (continueButton) {
+      console.log("Continue button found, adding event listener...");
+      continueButton.addEventListener('click', function () {
+        console.log("Continue button clicked. Redirecting...");
+        window.location.href = 'login.html';
+      });
+    } else {
+      console.log("Continue button not found.");
+    }
   }
 
   form.addEventListener('submit', handleFormSubmit);
@@ -122,14 +137,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const age = patientForm.age.value;
     const phone = patientForm.phone.value;
     const email = patientForm.email.value;
+    const password = patientForm.password.value;
     const address = patientForm.address.value;
     const dueDate = patientForm.dueDate.value;
 
     const auth = getAuth(); // Initialize Firebase Auth
 
     try {
-      // Register the user with email + dummy password
-      const password = phone + "@" + age; // You can implement a more secure password strategy
+      // Register the user with email and password
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
@@ -149,6 +164,10 @@ document.addEventListener('DOMContentLoaded', function () {
       await sendEmailVerification(user);
 
       alert("Registration successful! A confirmation email has been sent.");
+      
+      // Show success modal
+      showSuccessModal();
+
       patientForm.reset();
 
     } catch (error) {

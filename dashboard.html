@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mother's Dashboard</title>
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+  <!-- Sidebar Navigation -->
+  <div class="sidebar">
+    <div class="user-info">
+      <img src="profile-pic.jpg" alt="Profile Picture">
+      <h3>Welcome, Mother</h3>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="#">Dashboard</a></li>
+        <li><a href="#inbox">Inbox</a></li>
+        <li><a href="#appointments">Appointments</a></li>
+        <li><a href="#pregnancy-progress">Pregnancy Progress</a></li>
+        <li><a href="#health-tracker">Health Tracker</a></li>
+        <li><a href="#resources">Resources</a></li>
+        <li><a href="#" id="logout">Log Out</a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <header>
+      <h1>Mother's Dashboard</h1>
+      <button id="doctor-chat-btn">Chat with Doctor</button>
+    </header>
+
+    <!-- Inbox Section -->
+    <section id="inbox">
+      <h2>Your Inbox</h2>
+      <div class="message">
+        <p><strong>Dr. Smith:</strong> Your next appointment is scheduled for May 20th.</p>
+        <button class="reply-btn">Reply</button>
+      </div>
+      <div class="message">
+        <p><strong>Dr. Lee:</strong> Please remember to take your iron supplements.</p>
+        <button class="reply-btn">Reply</button>
+      </div>
+    </section>
+
+    <!-- Pregnancy Progress Section -->
+    <section id="pregnancy-progress">
+      <h2>Pregnancy Progress</h2>
+      <p>Your estimated due date is: <span id="due-date">July 15, 2025</span></p>
+      <p>Weeks pregnant: <span id="weeks-pregnant">22 weeks</span></p>
+      <p>Baby's growth: <span id="baby-growth">The baby is the size of a grapefruit.</span></p>
+    </section>
+
+    <!-- Health Tracker Section -->
+    <section id="health-tracker">
+      <h2>Health Tracker</h2>
+      <p>Weight: 65 kg</p>
+      <p>Blood Pressure: 120/80 mmHg</p>
+      <p>Next appointment: May 20, 2025</p>
+    </section>
+
+    <!-- Appointments Section -->
+    <section id="appointments">
+      <h2>Upcoming Appointments</h2>
+      <ul>
+        <li><strong>May 20, 2025:</strong> Regular Checkup with Dr. Lee</li>
+        <li><strong>June 10, 2025:</strong> Ultrasound Appointment</li>
+      </ul>
+    </section>
+
+    <!-- Chat with Doctor Section -->
+    <section id="doctor-chat">
+      <h2>Chat with Your Doctor</h2>
+      <textarea id="doctor-chat-message" placeholder="Ask your doctor..."></textarea>
+      <button id="send-message-btn">Send Message</button>
+      <div id="doctor-chat-log">
+        <!-- Messages will appear here -->
+      </div>
+    </section>
+  </div>
+
+  <script src="firebase-config.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>
