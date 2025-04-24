@@ -1,46 +1,93 @@
-// Firebase configuration and initialization
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID",
-  measurementId: "YOUR_MEASUREMENT_ID"
+  apiKey: "AIzaSyAAdjeTlV3QD7RNuhJeuIo8Vp2tftjbE1k",
+  authDomain: "pregnacare-70aed.firebaseapp.com",
+  projectId: "pregnacare-70aed",
+  storageBucket: "pregnacare-70aed.appspot.com",
+  messagingSenderId: "375969305451",
+  appId: "1:375969305451:web:82d4e1f90264cfa3f6f22e"
 };
 
 firebase.initializeApp(firebaseConfig);
-
-// Firebase Authentication
+const db = firebase.firestore();
 const auth = firebase.auth();
 
-// Chat Functionality
-const sendMessageBtn = document.getElementById('send-message-btn');
-const doctorChatMessage = document.getElementById('doctor-chat-message');
-const doctorChatLog = document.getElementById('doctor-chat-log');
+const reportBtn = document.getElementById("reportPregnancyBtn");
+const chatBtn = document.getElementById("chatBtn");
+const dueDateEl = document.getElementById("due-date");
+const inbox = document.getElementById("inbox");
 
-sendMessageBtn.addEventListener('click', () => {
-  const message = doctorChatMessage.value.trim();
-  if (message) {
-    doctorChatLog.innerHTML += `<p><strong>You:</strong> ${message}</p>`;
-    doctorChatMessage.value = ''; // clear input
-    // Optionally, store this message in Firebase for persistence
+// Auth listener
+auth.onAuthStateChanged(async user => {
+  if (!user) {
+    window.location.href = "login.html";
+    return;
+  }
+
+  const userRef = db.collection("patients").doc(user.uid);
+  const doc = await userRef.get();
+
+  if (!doc.exists) return;
+
+  const data = doc.data();
+
+  // Show "Report Pregnancy" button if not yet reported
+  if (!data.hasReportedPregnancy) {
+    if (reportBtn) {
+      reportBtn.style.display = "inline-block";
+    }
+
+    // Hide all sections
+    document.querySelectorAll("section").forEach(s => s.style.display = "none");
+
+    // Show message to report pregnancy
+    const msg = document.createElement("section");
+    msg.innerHTML = `<h2>Please report your pregnancy to unlock full dashboard access.</h2>`;
+    document.querySelector(".main-content").appendChild(msg);
+  } else {
+    loadInbox(user.uid);
+
+    // Set dummy due date (replace with dynamic logic later)
+    const lastPeriodDate = new Date("2024-10-10");
+    const dueDate = new Date(lastPeriodDate.setDate(lastPeriodDate.getDate() + 280));
+    dueDateEl.textContent = dueDate.toDateString();
   }
 });
 
-// Logout functionality
-document.getElementById('logout').addEventListener('click', async () => {
-  await auth.signOut();
-  window.location.href = 'login.html';
-});
-
-// Example for calculating the due date from last menstrual cycle
-function calculateDueDate(lastPeriodDate) {
-  const dueDate = new Date(lastPeriodDate);
-  dueDate.setDate(dueDate.getDate() + 280); // 280 days from last period = estimated due date
-  return dueDate;
+// Load messages
+function loadInbox(uid) {
+  db.collection("patients").doc(uid).collection("messages").onSnapshot(snapshot => {
+    inbox.innerHTML = `<h2>Your Inbox</h2>`;
+    if (snapshot.empty) {
+      inbox.innerHTML += "<p>No messages.</p>";
+    } else {
+      snapshot.forEach(doc => {
+        const msg = doc.data();
+        inbox.innerHTML += `
+          <div class="message">
+            <p><strong>Dr. ${msg.doctorName}:</strong> ${msg.text}</p>
+            <button>Reply</button>
+          </div>
+        `;
+      });
+    }
+  });
 }
 
-const lastPeriodDate = '2024-10-10'; // Example date
-const dueDate = calculateDueDate(lastPeriodDate);
-document.getElementById('due-date').textContent = dueDate.toDateString();
+// Redirect to report page
+if (reportBtn) {
+  reportBtn.addEventListener("click", () => {
+    window.location.href = "mother-registration.html";
+  });
+}
+
+// Chat with Doctor functionality (Optional)
+if (chatBtn) {
+  chatBtn.addEventListener("click", () => {
+    window.location.href = "chat.html"; // Adjust as needed
+  });
+}
+
+// Logout
+document.getElementById("logout").addEventListener("click", () => {
+  auth.signOut().then(() => window.location.href = "login.html");
+});

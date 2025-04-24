@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function () {
         alert("A new verification email has been sent to your email address. Please verify your email to proceed.");
       } else {
         alert("Login successful. Your email is already verified. Welcome back!");
-        window.location.href = "mother-registration.html";
+        window.location.href = "dashboard.html";
       }
     } catch (error) {
       console.error("Error during login:", error.message);
