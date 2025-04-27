@@ -12,7 +12,7 @@ const firebaseConfig = {
   messagingSenderId: "375969305451",
   appId: "1:375969305451:web:82d4e1f90264cfa3f6f22e",
   measurementId: "G-34LJE5R27W",
-  databaseURL: "https://pregnacare-70aed-default-rtdb.asia-southeast1.firebasedatabase.app" // Ensure this URL is correct
+  databaseURL: "https://pregnacare-70aed-default-rtdb.firebaseio.com"
 };
 
 // Initialize Firebase
@@ -46,33 +46,39 @@ form.addEventListener('submit', (e) => {
       alert("Doctor ID already taken! Please choose a different one.");
     } else {
       // Register doctor in Firebase Auth (using email and default password "doctor1234")
-      const defaultPassword = "doctor1234"; // You can change it to something else
+      const defaultPassword = "doctor1234"; // Default password
       createUserWithEmailAndPassword(auth, email, defaultPassword)
         .then((userCredential) => {
           const user = userCredential.user;
 
-          // Send email verification
-          sendEmailVerification(user)
-            .then(() => {
-              alert("Verification email sent! Please check your email.");
+          // Ensure the user is authenticated before proceeding
+          if (user) {
+            // Send email verification
+            sendEmailVerification(user)
+              .then(() => {
+                alert("Verification email sent! Please check your email.");
 
-              // Store doctor data in Database
-              set(ref(db, "doctors/" + user.uid), {
-                name: name,
-                mobile: mobile,
-                email: email,
-                specialization: specialization,
-                doctorId: doctorId,
-                uid: user.uid
+                // Store doctor data in Database after successful email verification
+                set(ref(db, "doctors/" + user.uid), {
+                  name: name,
+                  mobile: mobile,
+                  email: email,
+                  specialization: specialization,
+                  doctorId: doctorId,
+                  uid: user.uid
+                }).then(() => {
+                  form.reset();
+                }).catch((error) => {
+                  console.error(error);
+                  alert("Error storing doctor data in the database.");
+                });
+
+              })
+              .catch((error) => {
+                console.error(error);
+                alert("Error sending verification email.");
               });
-
-              form.reset();
-            })
-            .catch((error) => {
-              console.error(error);
-              alert("Error sending verification email.");
-            });
-
+          }
         })
         .catch((error) => {
           console.error(error);
