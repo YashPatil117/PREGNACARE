@@ -2,140 +2,20 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Doctor Registration</title>
+  <title>Doctor Registration - PREGNACARE</title>
   <link rel="stylesheet" href="doctor-registration-style.css">
-
-  <!-- Firebase SDKs as ES Modules -->
-  <script type="module">
-    // Import Firebase SDKs as modules
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
-    import { getDatabase, ref, set, query, orderByChild, equalTo, get } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
-
-    // Initialize Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyAAdjeTlV3QD7RNuhJeuIo8Vp2tftjbE1k",
-      authDomain: "pregnacare-70aed.firebaseapp.com",
-      projectId: "pregnacare-70aed",
-      storageBucket: "pregnacare-70aed.appspot.com",
-      messagingSenderId: "375969305451",
-      appId: "1:375969305451:web:82d4e1f90264cfa3f6f22e",
-      measurementId: "G-34LJE5R27W",
-      databaseURL: "https://pregnacare-70aed-default-rtdb.asia-southeast1.firebasedatabase.app"
-    };
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getDatabase(app);
-
-    // Form submit
-    const form = document.getElementById('doctor-registration-form');
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-
-      const name = document.getElementById('name').value.trim();
-      const mobile = document.getElementById('mobile').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const specialization = document.getElementById('specialization').value.trim();
-      const doctorId = document.getElementById('doctor-id').value.trim();
-
-      if (!name || !mobile || !email || !specialization || !doctorId) {
-        alert("Please fill all fields!");
-        return;
-      }
-
-      // Check if Doctor ID already exists
-      const doctorsRef = ref(db, "doctors");
-      const doctorQuery = query(doctorsRef, orderByChild("doctorId"), equalTo(doctorId));
-      
-      get(doctorQuery).then(snapshot => {
-        if (snapshot.exists()) {
-          alert("Doctor ID already taken! Please choose a different one.");
-        } else {
-          // Register doctor in Firebase Auth (using email and default password "doctor1234")
-          const defaultPassword = "doctor1234"; // You can change it to something else
-          createUserWithEmailAndPassword(auth, email, defaultPassword)
-            .then((userCredential) => {
-              const user = userCredential.user;
-
-              // Send email verification
-              user.sendEmailVerification()
-                .then(() => {
-                  alert("Verification email sent! Please check your email.");
-
-                  // Store doctor data in Database
-                  set(ref(db, "doctors/" + user.uid), {
-                    name: name,
-                    mobile: mobile,
-                    email: email,
-                    specialization: specialization,
-                    doctorId: doctorId,
-                    uid: user.uid
-                  });
-
-                  form.reset();
-                })
-                .catch((error) => {
-                  console.error(error);
-                  alert("Error sending verification email.");
-                });
-
-            })
-            .catch((error) => {
-              console.error(error);
-              alert(error.message);
-            });
-        }
-      });
-    });
-  </script>
 </head>
 <body>
-  <!-- Top Section with Logo & Title -->
-  <div class="top-section">
-    <div class="header-container">
-      <h1>Doctor Registration Hub</h1>
-      <img src="pregnacare.png" alt="Logo" class="logo">
-    </div>
-    <div class="wave-background"></div>
+  <div class="container">
+    <h2>Doctor Registration</h2>
+    <form id="doctorRegisterForm">
+      <input type="text" id="name" placeholder="Full Name" required><br>
+      <input type="email" id="email" placeholder="Email" required><br>
+      <input type="text" id="doctorID" placeholder="Choose Unique Doctor ID" required><br>
+      <button type="submit">Register</button>
+    </form>
   </div>
 
-  <!-- Main Content Section -->
-  <div class="main-content">
-    <!-- Registration Form -->
-    <div class="form-section">
-      <div class="form-container">
-        <h2>Doctor Registration</h2>
-        <form id="doctor-registration-form">
-          <label for="name">Full Name:</label>
-          <input type="text" id="name" placeholder="Enter your full name" required>
-
-          <label for="mobile">Mobile Number:</label>
-          <input type="tel" id="mobile" placeholder="Enter mobile number" required>
-
-          <label for="email">Email:</label>
-          <input type="email" id="email" placeholder="Enter email" required>
-
-          <label for="specialization">Specialization:</label>
-          <input type="text" id="specialization" placeholder="Enter your specialization" required>
-
-          <label for="doctor-id">Doctor ID:</label>
-          <input type="text" id="doctor-id" placeholder="Enter your Doctor ID" required>
-
-          <button type="submit">Register</button>
-        </form>
-
-        <p>Already registered? <a href="doctorlogin.html">Doctor Login</a></p> <!-- Doctor login button -->
-      </div>
-    </div>
-
-    <!-- Right Section with an Image -->
-    <div class="image-section">
-      <img src="doctor image.jpg" alt="Doctor Profile" class="doctor-image">
-    </div>
-  </div>
-
+  <script type="module" src="doctorRegister.js"></script>
 </body>
 </html>

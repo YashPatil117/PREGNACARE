@@ -1,91 +1,33 @@
-/* doctor-login-style.css */
-
 body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Poppins', sans-serif;
-  height: 100vh;
+  font-family: Arial, sans-serif;
+  background: #e0f7fa;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #a8edea, #fed6e3);
+  height: 100vh;
 }
 
-.login-container {
-  background: #ffffff;
-  padding: 40px 30px;
-  border-radius: 15px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-  width: 100%;
-  max-width: 400px;
+.container {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
   text-align: center;
-  animation: fadeIn 1s ease;
 }
 
-h1 {
-  margin-bottom: 20px;
-  font-size: 28px;
-  color: #333;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-}
-
-label {
-  text-align: left;
-  margin-bottom: 8px;
-  font-weight: 500;
-  color: #555;
-}
-
-input[type="email"] {
-  padding: 12px 15px;
-  margin-bottom: 20px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 16px;
-  transition: all 0.3s ease;
-}
-
-input[type="email"]:focus {
-  border-color: #7f7fd5;
-  outline: none;
-  box-shadow: 0 0 8px rgba(127, 127, 213, 0.5);
+input, button {
+  width: 80%;
+  padding: 10px;
+  margin: 10px 0;
 }
 
 button {
-  padding: 12px;
-  background: #7f7fd5;
-  color: #fff;
-  font-size: 16px;
-  font-weight: bold;
+  background-color: #00796b;
+  color: white;
   border: none;
-  border-radius: 8px;
   cursor: pointer;
-  transition: background 0.3s ease;
 }
 
 button:hover {
-  background: #5a5abf;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Responsive */
-@media (max-width: 500px) {
-  .login-container {
-    margin: 20px;
-    padding: 30px 20px;
-  }
+  background-color: #004d40;
 }

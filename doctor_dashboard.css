@@ -1,107 +1,58 @@
-/* dashboard-style.css */
-
-body {
+* {
   margin: 0;
-  font-family: 'Poppins', sans-serif;
-  background: #f4f7fa;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.navbar {
-  background: #6a11cb;
-  background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
-  padding: 15px 30px;
-  color: white;
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #f6d365, #fda085);
+  height: 100vh;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
 }
 
-.navbar h1 {
-  margin: 0;
-  font-size: 24px;
-}
-
-#logout-button {
-  background-color: white;
-  color: #6a11cb;
-  border: none;
-  padding: 8px 15px;
-  border-radius: 20px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-#logout-button:hover {
-  background-color: #e0e0e0;
-}
-
-.dashboard-container {
-  display: flex;
-  flex: 1;
-}
-
-.sidebar {
-  width: 220px;
-  background: #fff;
-  padding: 30px 20px;
-  border-right: 1px solid #e0e0e0;
-}
-
-.sidebar ul {
-  list-style: none;
-  padding: 0;
-}
-
-.sidebar ul li {
-  margin: 20px 0;
-}
-
-.sidebar ul li a {
-  text-decoration: none;
-  color: #333;
-  font-weight: 500;
-  transition: 0.3s;
-}
-
-.sidebar ul li a:hover {
-  color: #6a11cb;
-}
-
-.main-content {
-  flex: 1;
-  padding: 40px;
-  overflow-y: auto;
+.container {
+  background: white;
+  padding: 40px 30px;
+  border-radius: 16px;
+  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+  width: 350px;
+  text-align: center;
 }
 
 h2 {
   margin-bottom: 20px;
-  color: #444;
+  color: #333;
+  font-weight: 600;
 }
 
-#patients-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: white;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+p {
+  font-size: 18px;
+  margin-bottom: 30px;
+  color: #666;
 }
 
-#patients-table th, #patients-table td {
-  padding: 15px;
-  text-align: left;
-  border-bottom: 1px solid #eee;
-}
-
-#patients-table th {
-  background: #6a11cb;
+button {
+  margin-top: 20px;
+  padding: 12px;
+  background: #ff7e5f;
   color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease;
 }
 
-#patients-table tbody tr:hover {
-  background: #f1f1f1;
+button:hover {
+  background: #feb47b;
+}
+
+@media (max-width: 400px) {
+  .container {
+    width: 90%;
+    padding: 20px;
+  }
 }

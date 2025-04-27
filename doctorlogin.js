@@ -1,43 +1,38 @@
-// doctor-login.js
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
 
-// Initialize Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyAAdjeTlV3QD7RNuhJeuIo8Vp2tftjbE1k",
   authDomain: "pregnacare-70aed.firebaseapp.com",
   projectId: "pregnacare-70aed",
-  storageBucket: "pregnacare-70aed.appspot.com",
+  storageBucket: "pregnacare-70aed.firebasestorage.app",
   messagingSenderId: "375969305451",
   appId: "1:375969305451:web:82d4e1f90264cfa3f6f22e",
-  measurementId: "G-34LJE5R27W",
-  databaseURL: "https://pregnacare-70aed-default-rtdb.firebaseio.com"
+  measurementId: "G-34LJE5R27W"
 };
 
-firebase.initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 
-const auth = firebase.auth();
-
-const loginForm = document.getElementById('login-form');
-loginForm.addEventListener('submit', (e) => {
+document.getElementById('doctorLoginForm').addEventListener('submit', async (e) => {
   e.preventDefault();
-
+  
   const email = document.getElementById('email').value.trim();
-  const password = prompt("Enter your password (default is doctor1234 if new)");
+  const password = document.getElementById('password').value;
 
-  auth.signInWithEmailAndPassword(email, password)
-    .then((userCredential) => {
-      const user = userCredential.user;
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
 
-      if (user.emailVerified) {
-        // Redirect to dashboard
-        window.location.href = "dashboard.html";
-      } else {
-        alert("Please verify your email first! Check your inbox.");
-        auth.signOut();
-      }
+    if (!user.emailVerified) {
+      alert('Please verify your email before logging in.');
+      return;
+    }
 
-    })
-    .catch((error) => {
-      console.error(error);
-      alert(error.message);
-    });
+    alert('Login successful!');
+    window.location.href = 'doctorDashboard.html';
+  } catch (error) {
+    console.error(error);
+    alert(error.message);
+  }
 });
