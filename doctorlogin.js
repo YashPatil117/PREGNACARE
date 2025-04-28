@@ -30,7 +30,7 @@ document.getElementById('doctorLoginForm').addEventListener('submit', async (e) 
     }
 
     alert('Login successful!');
-    window.location.href = 'doctorDashboard.html';
+    window.location.href = 'doctor_dashboard.html';
   } catch (error) {
     console.error(error);
     alert(error.message);
