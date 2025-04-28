@@ -1,58 +1,116 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 body {
-  font-family: 'Poppins', sans-serif;
-  background: linear-gradient(135deg, #f6d365, #fda085);
-  height: 100vh;
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f0f8ff;
   display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
-.container {
-  background: white;
-  padding: 40px 30px;
-  border-radius: 16px;
-  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
-  width: 350px;
-  text-align: center;
+.sidebar {
+  width: 250px;
+  background: #00796b;
+  color: white;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  height: 100vh;
 }
 
-h2 {
-  margin-bottom: 20px;
-  color: #333;
-  font-weight: 600;
-}
-
-p {
-  font-size: 18px;
+.sidebar h2 {
   margin-bottom: 30px;
-  color: #666;
 }
 
-button {
-  margin-top: 20px;
-  padding: 12px;
-  background: #ff7e5f;
+.sidebar button {
+  background: none;
+  border: none;
+  color: white;
+  margin: 10px 0;
+  font-size: 18px;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+}
+
+.sidebar button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+  padding-left: 5px;
+}
+
+.sidebar .logout {
+  margin-top: auto;
+  background: #c62828;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.main {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+}
+
+.section {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+}
+
+ul#patientList {
+  list-style: none;
+  padding: 0;
+}
+
+ul#patientList li {
+  background: #e0f7fa;
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.chat-box {
+  background: #f1f1f1;
+  height: 300px;
+  overflow-y: auto;
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+input, textarea, select {
+  width: 100%;
+  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+button[type="submit"], button[onclick="sendMessage()"] {
+  background-color: #00796b;
   color: white;
   border: none;
-  border-radius: 8px;
-  font-size: 16px;
+  padding: 10px;
+  border-radius: 5px;
   cursor: pointer;
-  transition: background 0.3s ease;
 }
 
 button:hover {
-  background: #feb47b;
+  background-color: #004d40;
 }
 
-@media (max-width: 400px) {
-  .container {
-    width: 90%;
-    padding: 20px;
-  }
+.form-row {
+  display: flex;
+  gap: 10px;
+}
+
+.form-row input {
+  flex: 1;
+}
+
+.greeting {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #004d40;
 }

@@ -7,7 +7,8 @@
 </head>
 <body>
   <div class="main-container">
-    <div class="container">
+    <!-- Doctor Login Form -->
+    <div class="container" id="loginContainer">
       <h2>Doctor Login</h2>
       <form id="doctorLoginForm">
         <input type="email" id="email" placeholder="Email" required>
@@ -17,6 +18,40 @@
         <p class="register-text">Don't have an account?</p>
         <button type="button" class="register-button" onclick="window.location.href='doctor-registration.html'">Register</button>
       </form>
+    </div>
+
+    <!-- Doctor Dashboard -->
+    <div class="container" id="dashboardContainer" style="display: none;">
+      <h2>Doctor Dashboard</h2>
+      <div>
+        <span>Welcome, <span id="doctorName">Doctor</span> (ID: <span id="doctorID">Loading...</span>)</span>
+      </div>
+      <button id="logoutBtn">Logout</button>
+
+      <!-- Sections for displaying patients, chat, and register -->
+      <div id="patientsSection">
+        <h3>Patients Assigned to You</h3>
+        <ul id="patientList">
+          <li>Loading...</li>
+        </ul>
+      </div>
+
+      <div id="chatSection">
+        <h3>Chat</h3>
+        <div id="chatMessages"></div>
+        <textarea id="chatInput" placeholder="Type your message here..."></textarea>
+        <button onclick="sendMessage()">Send Message</button>
+      </div>
+
+      <div id="registerSection">
+        <h3>Register Pregnancy</h3>
+        <form id="pregnancyForm">
+          <input type="text" id="womanName" placeholder="Full Name" required>
+          <input type="tel" id="phone" placeholder="Phone Number" required>
+          <input type="text" id="address" placeholder="Address" required>
+          <button type="submit">Register</button>
+        </form>
+      </div>
     </div>
 
     <div class="image-container">

@@ -6,12 +6,61 @@
   <link rel="stylesheet" href="doctor_dashboard.css">
 </head>
 <body>
-  <div class="container">
-    <h2>Welcome, <span id="doctorName">Doctor</span></h2>
-    <p>Doctor ID: <span id="doctorID">Loading...</span></p>
-    <button id="logoutBtn">Logout</button>
+
+<div class="sidebar">
+  <h2>PREGNACARE</h2>
+  <h3 id="doctorName">Doctor</h3>
+  <button onclick="showSection('patientsSection')">Patients</button>
+  <button onclick="showSection('chatSection')">Chat</button>
+  <button onclick="showSection('registerSection')">Register Pregnancy</button>
+  <button id="logoutBtn" class="logout">Logout</button>
+</div>
+
+<div class="main">
+  <div class="greeting" id="greetingText">Hello Doctor !!</div>
+
+  <!-- Patients List -->
+  <div id="patientsSection" class="section">
+    <h2>Patients Assigned</h2>
+    <ul id="patientList"></ul>
   </div>
 
-  <script type="module" src="doctor_dashboard.js"></script>
+  <!-- Chat Section -->
+  <div id="chatSection" class="section" style="display: none;">
+    <h2>Chat with Patient</h2>
+    <select id="patientSelect">
+      <option value="">Select Patient</option>
+    </select>
+    <div id="chatMessages" class="chat-box"></div>
+    <input type="text" id="chatInput" placeholder="Type a message...">
+    <button onclick="sendMessage()">Send</button>
+  </div>
+
+  <!-- Register Pregnancy Section -->
+  <div id="registerSection" class="section" style="display: none;">
+    <h2>Register New Pregnancy</h2>
+    <form id="pregnancyForm">
+      <div class="form-row">
+        <input type="text" id="firstName" placeholder="First Name" required>
+        <input type="text" id="middleName" placeholder="Middle Name">
+        <input type="text" id="lastName" placeholder="Last Name" required>
+      </div>
+      <div class="form-row">
+        <input type="number" id="age" placeholder="Age" required>
+        <input type="date" id="dob" placeholder="Date of Birth" required>
+      </div>
+      <div class="form-row">
+        <input type="text" id="mobile" placeholder="Mobile Number" required>
+        <input type="text" id="husbandName" placeholder="Husband's Name" required>
+      </div>
+      <textarea id="address" placeholder="Address" required></textarea>
+      <input type="email" id="email" placeholder="Email (optional)">
+      <textarea id="medicalHistory" placeholder="Brief Medical History"></textarea>
+      <button type="submit">Register Pregnancy</button>
+    </form>
+  </div>
+</div>
+
+<script type="module" src="doctor_dashboard.js"></script>
 </body>
 </html>

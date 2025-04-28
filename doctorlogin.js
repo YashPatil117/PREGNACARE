@@ -1,38 +1,38 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
+import { auth } from './firebase-config.js'; // Ensure this path is correct
+import { signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js';
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAAdjeTlV3QD7RNuhJeuIo8Vp2tftjbE1k",
-  authDomain: "pregnacare-70aed.firebaseapp.com",
-  projectId: "pregnacare-70aed",
-  storageBucket: "pregnacare-70aed.firebasestorage.app",
-  messagingSenderId: "375969305451",
-  appId: "1:375969305451:web:82d4e1f90264cfa3f6f22e",
-  measurementId: "G-34LJE5R27W"
-};
+// DOM Elements
+const loginForm = document.getElementById('doctorLoginForm');
+const emailInput = document.getElementById('email');
+const passwordInput = document.getElementById('password');
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+// Handle login
+loginForm.addEventListener('submit', (e) => {
+  e.preventDefault(); // Prevent the form from submitting the usual way
 
-document.getElementById('doctorLoginForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value;
+  const email = emailInput.value.trim();
+  const password = passwordInput.value.trim();
 
-  try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
-
-    if (!user.emailVerified) {
-      alert('Please verify your email before logging in.');
-      return;
-    }
-
-    alert('Login successful!');
-    window.location.href = 'doctor_dashboard.html';
-  } catch (error) {
-    console.error(error);
-    alert(error.message);
+  if (!email || !password) {
+    alert('Please enter both email and password.');
+    return;
   }
+
+  // Firebase Authentication
+  signInWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      console.log('Login successful:', userCredential); // For debugging
+      // Redirect to the dashboard after successful login
+      window.location.href = 'doctor_dashboard.html'; 
+    })
+    .catch((error) => {
+      console.error('Error during login:', error);
+      if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+        // Show an error message if email or password is incorrect
+        alert('Email or password is incorrect. Please check and try again.');
+      } else {
+        // Handle other errors (network issues, etc.)
+        alert('An error occurred during login. Please try again later.');
+      }
+    });
 });
