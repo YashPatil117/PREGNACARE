@@ -93,3 +93,37 @@ document.getElementById('pregnancyForm').addEventListener('submit', async (e) =>
   document.getElementById('pregnancyForm').reset();
   await loadPatients();
 });
+
+// Change Password
+document.getElementById('changePasswordForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const currentPassword = document.getElementById('currentPassword').value.trim();
+  const newPassword = document.getElementById('newPassword').value.trim();
+  const confirmNewPassword = document.getElementById('confirmNewPassword').value.trim();
+
+  const passwordError = document.getElementById('passwordError');
+  const passwordSuccess = document.getElementById('passwordSuccess');
+
+  if (newPassword !== confirmNewPassword) {
+    passwordError.style.display = 'block';
+    passwordSuccess.style.display = 'none';
+    return;
+  }
+
+  const user = auth.currentUser;
+  const credential = firebase.auth.EmailAuthProvider.credential(user.email, currentPassword);
+
+  try {
+    // Reauthenticate to allow password change
+    await user.reauthenticateWithCredential(credential);
+
+    // Change password
+    await user.updatePassword(newPassword);
+    passwordSuccess.style.display = 'block';
+    passwordError.style.display = 'none';
+  } catch (error) {
+    passwordError.style.display = 'block';
+    passwordSuccess.style.display = 'none';
+  }
+});

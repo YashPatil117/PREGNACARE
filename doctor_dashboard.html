@@ -13,6 +13,7 @@
   <button onclick="showSection('patientsSection')">Patients</button>
   <button onclick="showSection('chatSection')">Chat</button>
   <button onclick="showSection('registerSection')">Register Pregnancy</button>
+  <button onclick="showSection('changePasswordSection')">Change Password</button>
   <button id="logoutBtn" class="logout">Logout</button>
 </div>
 
@@ -58,6 +59,21 @@
       <textarea id="medicalHistory" placeholder="Brief Medical History"></textarea>
       <button type="submit">Register Pregnancy</button>
     </form>
+  </div>
+
+  <!-- Change Password Section -->
+  <div id="changePasswordSection" class="section" style="display: none;">
+    <h2>Change Password</h2>
+    <form id="changePasswordForm">
+      <div class="form-row">
+        <input type="password" id="currentPassword" placeholder="Current Password" required>
+        <input type="password" id="newPassword" placeholder="New Password" required>
+        <input type="password" id="confirmNewPassword" placeholder="Confirm New Password" required>
+      </div>
+      <button type="submit">Change Password</button>
+    </form>
+    <p id="passwordError" style="color: red; display: none;">Passwords do not match!</p>
+    <p id="passwordSuccess" style="color: green; display: none;">Password changed successfully!</p>
   </div>
 </div>
 
