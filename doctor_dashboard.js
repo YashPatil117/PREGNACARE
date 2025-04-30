@@ -21,13 +21,13 @@ auth.onAuthStateChanged(async user => {
 
     await loadPatients();
   } else {
-    window.location.href = "doctor-login.html";
+    window.location.href = "doctorlogin.html";
   }
 });
 
 // Logout
 logoutBtn.addEventListener('click', () => {
-  auth.signOut().then(() => window.location.href = "doctor-login.html");
+  auth.signOut().then(() => window.location.href = "doctorlogin.html");
 });
 
 // Load Patients
