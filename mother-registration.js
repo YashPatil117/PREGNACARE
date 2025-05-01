@@ -29,40 +29,39 @@ document.getElementById('mother-registration-form').addEventListener('submit', a
   };
 
   try {
-    // ✅ Save mother's data
+    // ✅ Store mother data regardless of doctor validity
     await setDoc(doc(db, "women", uid), {
       ...formData,
       email: user.email || "",
       role: "mother",
+      registrationDate: new Date(), // for monthly emails
       createdAt: new Date()
     });
 
-    // ✅ Query doctor by `doctorId` field (instead of document ID)
+    // ✅ Search for doctor document with matching doctorId field
     const q = query(collection(db, "doctors"), where("doctorId", "==", formData.doctorId));
     const querySnapshot = await getDocs(q);
 
     if (!querySnapshot.empty) {
-      // If found, update first match
       const docSnap = querySnapshot.docs[0];
       const doctorRef = doc(db, "doctors", docSnap.id);
 
-      // Link the mother to the doctor's patient list
       await updateDoc(doctorRef, {
         patients: arrayUnion({
           motherId: uid,
           name: `${formData.fname} ${formData.lname}`,
           email: user.email || "",
-          trimester: formData.trimester, // Additional info
-          month: formData.month // Additional info
+          trimester: formData.trimester,
+          month: formData.month
         })
       });
 
-      alert("Registration Successful! Linked with Doctor.");
+      alert("Registration successful and linked with doctor.");
     } else {
-      alert("Doctor ID not found! Patient registered, but doctor was not linked.");
+      alert("Doctor ID not found. Patient registered, but doctor not linked.");
     }
 
-    console.log("Mother data stored successfully!");
+    console.log("Mother registration completed.");
   } catch (error) {
     console.error("Error during registration:", error);
     alert("An error occurred during registration. See console for details.");

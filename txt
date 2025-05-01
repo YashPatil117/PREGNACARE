@@ -1,0 +1,10 @@
+npm install -g firebase-tools
+firebase login
+firebase init
+npm install emailjs-com
+npm install firebase-admin emailjs-com
+
+
+
+email js  service key : service_2yyas18
+public key : lUOvxp6yj6uAY_893
