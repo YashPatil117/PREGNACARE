@@ -1,52 +1,56 @@
-import { db } from './firebase-config.js';
-import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+const functions = require('firebase-functions');
+const admin = require('firebase-admin');
+const emailjs = require('emailjs-com'); // EmailJS
 
-// EmailJS config
-const EMAIL_SERVICE_ID = 'service_2yyas18';
-const EMAIL_PUBLIC_KEY = 'lUOvxp6yj6uAY_893';
+admin.initializeApp();
 
-// Call this function on load or trigger it with a cron-like scheduler
-async function sendMonthlyEmails() {
-  const womenRef = collection(db, "women");
-  const womenSnap = await getDocs(womenRef);
+// Cloud Function for manual email trigger
+exports.sendMonthlyEmailsManually = functions.https.onCall(async (data, context) => {
+  // Ensure the doctor is authenticated
+  const user = context.auth;
+  if (!user) {
+    throw new functions.https.HttpsError('unauthenticated', 'Doctor is not authenticated');
+  }
 
+  const womenRef = admin.firestore().collection('women');
+  const womenSnapshot = await womenRef.get();
   const today = new Date();
+  const sentEmails = [];
 
-  for (const docSnap of womenSnap.docs) {
+  womenSnapshot.forEach(async (docSnap) => {
     const data = docSnap.data();
 
-    if (!data.registrationDate || !data.month || !data.email) continue;
+    // Skip if any required field is missing
+    if (!data.registrationDate || !data.month || !data.email) return;
 
     const regDate = data.registrationDate.toDate();
     const startMonth = parseInt(data.month);
     const email = data.email;
 
-    const diffInMonths = (today.getFullYear() - regDate.getFullYear()) * 12 +
-                         (today.getMonth() - regDate.getMonth());
+    const diffInMonths =
+      (today.getFullYear() - regDate.getFullYear()) * 12 + (today.getMonth() - regDate.getMonth());
 
     const currentPregnancyMonth = startMonth + diffInMonths;
 
-    if (currentPregnancyMonth > 9 || currentPregnancyMonth < 1) continue;
+    // Only send email if the pregnancy month is valid (1 to 9 months)
+    if (currentPregnancyMonth > 9 || currentPregnancyMonth < 1) return;
 
     const templateId = `template_month${currentPregnancyMonth}`;
 
-    // Send the email
-    await sendEmail(email, templateId, {
-      to_email: email,
-      month: currentPregnancyMonth,
-      name: data.fname || "Mother"
-    });
+    // Send the email using EmailJS
+    try {
+      await emailjs.send(
+        'service_2yyas18',
+        templateId,
+        { to_email: email, month: currentPregnancyMonth, name: data.fname || 'Mother' },
+        'lUOvxp6yj6uAY_893'
+      );
+      sentEmails.push({ email: data.email, month: currentPregnancyMonth });
+      console.log(`Sent Month ${currentPregnancyMonth} email to ${email}`);
+    } catch (error) {
+      console.error('Error sending email:', error);
+    }
+  });
 
-    console.log(`Sent Month ${currentPregnancyMonth} email to ${email}`);
-  }
-}
-
-// EmailJS function
-function sendEmail(toEmail, templateId, templateParams) {
-  return emailjs.send(EMAIL_SERVICE_ID, templateId, templateParams, EMAIL_PUBLIC_KEY)
-    .then(() => console.log(`Email sent to ${toEmail}`))
-    .catch((error) => console.error("Email sending failed:", error));
-}
-
-// Call it
-sendMonthlyEmails();
+  return { success: true, sentEmails };
+});

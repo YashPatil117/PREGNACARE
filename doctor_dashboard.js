@@ -1,6 +1,7 @@
 import { auth, db } from './firebase-config.js';
 import { collection, query, where, getDocs, addDoc } from 'firebase/firestore';
 import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from 'firebase/auth';
+import { sendEmailToPatient } from './emailService.js'; // Assume email service is implemented in this file
 
 const doctorNameSpan = document.getElementById('doctorName');
 const logoutBtn = document.getElementById('logoutBtn');
@@ -57,6 +58,9 @@ async function loadPatients() {
     option.value = doc.id;
     option.textContent = fullName;
     patientSelect.appendChild(option);
+
+    // Check for upcoming due month (for email reminder)
+    sendEmailReminder(patient);
   });
 }
 
@@ -89,7 +93,8 @@ document.getElementById('pregnancyForm').addEventListener('submit', async (e) =>
     address: document.getElementById('address').value.trim(),
     email: document.getElementById('email').value.trim(),
     medicalHistory: document.getElementById('medicalHistory').value.trim(),
-    assignedDoctorID: auth.currentUser.uid
+    assignedDoctorID: auth.currentUser.uid,
+    pregnancyStartDate: new Date(), // Record the start date of pregnancy
   };
 
   // Validate required fields
@@ -142,3 +147,17 @@ document.getElementById('changePasswordForm').addEventListener('submit', async (
     passwordSuccess.style.display = 'none';
   }
 });
+
+// Check pregnancy month and send reminder
+async function sendEmailReminder(patient) {
+  const pregnancyStartDate = patient.pregnancyStartDate.toDate(); // Convert to a JS Date object
+  const currentDate = new Date();
+
+  // Calculate the difference in months
+  const monthDiff = (currentDate.getFullYear() - pregnancyStartDate.getFullYear()) * 12 + currentDate.getMonth() - pregnancyStartDate.getMonth();
+
+  if (monthDiff > 0 && monthDiff <= 9) {
+    const monthMessage = `You are now in the ${monthDiff}th month of your pregnancy. Keep up with your care!`;
+    await sendEmailToPatient(patient.email, `Pregnancy Update: Month ${monthDiff}`, monthMessage);
+  }
+}

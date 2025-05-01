@@ -8,3 +8,6 @@ npm install firebase-admin emailjs-com
 
 email js  service key : service_2yyas18
 public key : lUOvxp6yj6uAY_893
+
+
+once added: firebase deploy --only functions
