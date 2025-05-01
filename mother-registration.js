@@ -1,53 +1,70 @@
 import { auth, db } from './firebase-config.js';
-import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-import { setDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+import {
+  setDoc, doc, updateDoc, arrayUnion, getDocs, query, collection, where
+} from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-// Capture form submission and store the data
 document.getElementById('mother-registration-form').addEventListener('submit', async function (e) {
-  e.preventDefault(); // Prevent form from reloading the page
+  e.preventDefault();
 
-  // Gather form data
+  const user = auth.currentUser;
+  if (!user) {
+    alert("User not logged in!");
+    return;
+  }
+
+  const uid = user.uid;
+
   const formData = {
-    fname: document.getElementById('name1').value,
-    mname: document.getElementById('name2').value,
-    lname: document.getElementById('name3').value,
-    age: document.getElementById('age').value,
+    fname: document.getElementById('firstName').value.trim(),
+    lname: document.getElementById('lastName').value.trim(),
+    age: document.getElementById('age').value.trim(),
     dob: document.getElementById('dob').value,
-    mobile: document.getElementById('mobile').value,
-    email: document.getElementById('email').value,
-    husbandName: document.getElementById('husband-name').value,
-    address: document.getElementById('address').value,
-    medicalHistory: document.getElementById('medical-history').value,
-    doctorId: document.getElementById('doctor-id').value // assuming you have an input for doctor ID
+    husbandName: document.getElementById('husbandName').value.trim(),
+    trimester: document.getElementById('trimester').value.trim(),
+    month: document.getElementById('month').value.trim(),
+    doctorName: document.getElementById('doctorName').value.trim(),
+    doctorId: document.getElementById('doctorId').value.trim(),
+    address: document.getElementById('address').value.trim(),
+    medicalHistory: document.getElementById('medicalHistory').value.trim()
   };
 
   try {
-    // Create user with email and password using Firebase Authentication
-    const userCredential = await createUserWithEmailAndPassword(auth, formData.email, "defaultPassword123"); // You can change the default password
-
-    const uid = userCredential.user.uid;
-
-    // Store additional data in Firestore (e.g., the user's profile)
+    // ✅ Save mother's data
     await setDoc(doc(db, "women", uid), {
-      fname: formData.fname,  // Fixed typo
-      mname: formData.mname,  // Fixed typo
-      lname: formData.lname,  // Fixed typo
-      age: formData.age,
-      dob: formData.dob,
-      mobile: formData.mobile,
-      email: formData.email,
-      husbandName: formData.husbandName,
-      address: formData.address,
-      medicalHistory: formData.medicalHistory,
-      doctorId: formData.doctorId,
-      role: "mother",  // Explicitly marking this user as a mother
+      ...formData,
+      email: user.email || "",
+      role: "mother",
       createdAt: new Date()
     });
 
-    alert("Registration Successful!");
-    console.log("User registered and data stored in Firestore!");
+    // ✅ Query doctor by `doctorId` field (instead of document ID)
+    const q = query(collection(db, "doctors"), where("doctorId", "==", formData.doctorId));
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      // If found, update first match
+      const docSnap = querySnapshot.docs[0];
+      const doctorRef = doc(db, "doctors", docSnap.id);
+
+      // Link the mother to the doctor's patient list
+      await updateDoc(doctorRef, {
+        patients: arrayUnion({
+          motherId: uid,
+          name: `${formData.fname} ${formData.lname}`,
+          email: user.email || "",
+          trimester: formData.trimester, // Additional info
+          month: formData.month // Additional info
+        })
+      });
+
+      alert("Registration Successful! Linked with Doctor.");
+    } else {
+      alert("Doctor ID not found! Patient registered, but doctor was not linked.");
+    }
+
+    console.log("Mother data stored successfully!");
   } catch (error) {
     console.error("Error during registration:", error);
-    alert("Error occurred during registration.");
+    alert("An error occurred during registration. See console for details.");
   }
 });

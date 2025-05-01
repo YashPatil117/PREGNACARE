@@ -1,71 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Maternal Care Registration</title>
-  <link rel="stylesheet" href="mother-registration-style.css">
+  <link rel="stylesheet" href="mother-registration-style.css" />
 </head>
 <body>
-  <!-- Blue Top Section with Logo & Title -->
+  <!-- Top Banner -->
   <div class="top-section">
     <div class="header-container">
       <h1>Maternal Care Hub</h1>
-      <img src="pregnacare.png" alt="Logo" class="logo">
+      <img src="pregnacare.png" alt="Pregnacare Logo" class="logo"/>
     </div>
     <div class="wave-background"></div>
   </div>
 
-  <!-- Main Content Section -->
+  <!-- Main Content -->
   <div class="main-content">
     <!-- Registration Form -->
     <div class="form-section">
       <div class="form-container">
-        <h2>Mother Registration</h2>
+        <h2>Mother Registration Form</h2>
         <form id="mother-registration-form">
-          <label for="name1">First Name:</label>
-          <input type="text" id="name" placeholder="Enter your First Name" required>
+          <div class="form-row">
+            <input type="text" id="firstName" placeholder="First Name" required />
+            <input type="text" id="lastName" placeholder="Last Name" required />
+          </div>
 
-          <label for="name2">Middle Name:</label>
-          <input type="text" id="name" placeholder="Enter your Middle Name" required>
+          <div class="form-row">
+            <input type="number" id="age" placeholder="Age" required />
+            <input type="date" id="dob" placeholder="Date of Birth" required />
+          </div>
 
-          <label for="name3">Last Name:</label>
-          <input type="text" id="name" placeholder="Enter your Last Name" required>
+          <div class="form-row">
+            <input type="text" id="husbandName" placeholder="Husband's Name" required />
+            <input type="text" id="trimester" placeholder="Trimester (e.g., 1st, 2nd, 3rd)" required />
+          </div>
 
-          <label for="age">Age:</label>
-          <input type="number" id="age" placeholder="Enter your age" required>
+          <div class="form-row">
+            <input type="number" id="month" placeholder="Pregnancy Month (1-9)" required />
+          </div>
 
-          <label for="dob">Date of Birth:</label>
-          <input type="date" id="dob" required>
+          <div class="form-row">
+            <input type="text" id="doctorName" placeholder="Doctor's Name" required />
+            <input type="text" id="doctorId" placeholder="Doctor's ID" required />
+          </div>
 
-          <label for="mobile">Mobile Number:</label>
-          <input type="tel" id="mobile" placeholder="Enter mobile number" required>
-
-          <label for="email">Email:</label>
-          <input type="email" id="email" placeholder="Enter email" required>
-
-          <label for="husband-name">Husband's Name:</label>
-          <input type="text" id="husband-name" placeholder="Enter husband's name" required>
-
-          <label for="address">Address:</label>
-          <textarea id="address" placeholder="Enter your address" required></textarea>
-
-          <label for="medical-history">Medical History:</label>
-          <textarea id="medical-history" placeholder="Describe any medical history"></textarea>
+          <textarea id="address" placeholder="Address" required></textarea>
+          <textarea id="medicalHistory" placeholder="Medical History (if any)"></textarea>
 
           <button type="submit">Register</button>
         </form>
-        
-       
       </div>
     </div>
 
-    <!-- Right Section with an Image -->
+    <!-- Side Image or Animation -->
     <div class="image-section">
-      <img src="mother pic.jpg" alt="Pregnant Mother" class="pregnant-image">
+      <img src="mother pic.jpg" alt="Pregnant Mother" class="pregnant-image" />
+      <div class="floating-bubbles"></div>
     </div>
   </div>
 
-  <script src="mother-registration.js"></script>
+  <!-- ✅ Use module type to allow ES6 imports in JS -->
+  <script type="module" src="mother-registration.js"></script>
 </body>
 </html>
