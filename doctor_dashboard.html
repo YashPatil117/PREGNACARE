@@ -77,6 +77,155 @@
   </div>
 </div>
 
-<script type="module" src="doctor_dashboard.js"></script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut, EmailAuthProvider, reauthenticateWithCredential, updatePassword } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+  import { getFirestore, collection, query, where, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAAdjeTlV3QD7RNuhJeuIo8Vp2tftjbE1k",
+  authDomain: "pregnacare-70aed.firebaseapp.com",
+  projectId: "pregnacare-70aed",
+  storageBucket: "pregnacare-70aed.firebasestorage.app",
+  messagingSenderId: "375969305451",
+  appId: "1:375969305451:web:82d4e1f90264cfa3f6f22e",
+  measurementId: "G-34LJE5R27W"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  const doctorNameSpan = document.getElementById('doctorName');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const greetingText = document.getElementById('greetingText');
+  const sections = document.querySelectorAll('.section');
+
+  window.showSection = function(sectionId) {
+    sections.forEach(section => section.style.display = 'none');
+    document.getElementById(sectionId).style.display = 'block';
+  };
+
+  onAuthStateChanged(auth, async user => {
+    if (user) {
+      const doctorName = user.displayName || " ";
+      doctorNameSpan.textContent = doctorName;
+      greetingText.textContent = `Hello Doctor ${doctorName} !!`;
+      await loadPatients();
+    } else {
+      window.location.href = "doctorlogin.html";
+    }
+  });
+
+  logoutBtn.addEventListener('click', () => {
+    signOut(auth).then(() => window.location.href = "doctorlogin.html");
+  });
+
+  async function loadPatients() {
+    const patientList = document.getElementById('patientList');
+    const patientSelect = document.getElementById('patientSelect');
+    patientList.innerHTML = '<li>Loading...</li>';
+    patientSelect.innerHTML = '<option value="">Select Patient</option>';
+
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const q = query(collection(db, 'patients'), where('assignedDoctorID', '==', user.uid));
+    const snapshot = await getDocs(q);
+    patientList.innerHTML = '';
+
+    snapshot.forEach(doc => {
+      const patient = doc.data();
+      const name = patient.fullName || `${patient.firstName} ${patient.lastName}`;
+      const li = document.createElement('li');
+      li.textContent = name;
+      patientList.appendChild(li);
+
+      const option = document.createElement('option');
+      option.value = doc.id;
+      option.textContent = name;
+      patientSelect.appendChild(option);
+    });
+  }
+
+  window.sendMessage = function() {
+    const messageBox = document.getElementById('chatMessages');
+    const input = document.getElementById('chatInput');
+
+    if (input.value.trim() !== '') {
+      const newMessage = document.createElement('div');
+      newMessage.textContent = `Doctor: ${input.value}`;
+      messageBox.appendChild(newMessage);
+      input.value = '';
+      messageBox.scrollTop = messageBox.scrollHeight;
+    }
+  }
+
+  document.getElementById('pregnancyForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const formData = {
+      firstName: document.getElementById('firstName').value.trim(),
+      middleName: document.getElementById('middleName').value.trim(),
+      lastName: document.getElementById('lastName').value.trim(),
+      age: parseInt(document.getElementById('age').value.trim()),
+      dob: document.getElementById('dob').value.trim(),
+      mobile: document.getElementById('mobile').value.trim(),
+      husbandName: document.getElementById('husbandName').value.trim(),
+      address: document.getElementById('address').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      medicalHistory: document.getElementById('medicalHistory').value.trim(),
+      assignedDoctorID: auth.currentUser.uid
+    };
+
+    // Basic validation
+    if (!formData.firstName || !formData.lastName || !formData.age || !formData.dob || !formData.mobile || !formData.husbandName || !formData.address) {
+      alert('Please fill in all required fields.');
+      return;
+    }
+
+    try {
+      await addDoc(collection(db, 'patients'), formData);
+      alert('Pregnancy Registered Successfully!');
+      document.getElementById('pregnancyForm').reset();
+      await loadPatients();
+    } catch (error) {
+      console.error(error);
+      alert('Failed to register. Please try again.');
+    }
+  });
+
+  document.getElementById('changePasswordForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const currentPassword = document.getElementById('currentPassword').value.trim();
+    const newPassword = document.getElementById('newPassword').value.trim();
+    const confirmNewPassword = document.getElementById('confirmNewPassword').value.trim();
+
+    const passwordError = document.getElementById('passwordError');
+    const passwordSuccess = document.getElementById('passwordSuccess');
+
+    if (newPassword !== confirmNewPassword) {
+      passwordError.style.display = 'block';
+      passwordSuccess.style.display = 'none';
+      return;
+    }
+
+    const user = auth.currentUser;
+    const credential = EmailAuthProvider.credential(user.email, currentPassword);
+
+    try {
+      await reauthenticateWithCredential(user, credential);
+      await updatePassword(user, newPassword);
+      passwordSuccess.style.display = 'block';
+      passwordError.style.display = 'none';
+    } catch (error) {
+      console.error(error);
+      passwordError.style.display = 'block';
+      passwordSuccess.style.display = 'none';
+    }
+  });
+</script>
+
 </body>
 </html>

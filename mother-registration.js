@@ -29,9 +29,9 @@ document.getElementById('mother-registration-form').addEventListener('submit', a
 
     // Store additional data in Firestore (e.g., the user's profile)
     await setDoc(doc(db, "women", uid), {
-      fname: formData.name1,
-      mname: formData.name2,
-      lname: formData.name3,
+      fname: formData.fname,  // Fixed typo
+      mname: formData.mname,  // Fixed typo
+      lname: formData.lname,  // Fixed typo
       age: formData.age,
       dob: formData.dob,
       mobile: formData.mobile,
@@ -40,7 +40,7 @@ document.getElementById('mother-registration-form').addEventListener('submit', a
       address: formData.address,
       medicalHistory: formData.medicalHistory,
       doctorId: formData.doctorId,
-      role: "mother",
+      role: "mother",  // Explicitly marking this user as a mother
       createdAt: new Date()
     });
 

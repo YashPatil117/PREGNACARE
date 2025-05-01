@@ -18,33 +18,40 @@ const db = getFirestore(app);
 
 document.getElementById('doctorRegisterForm').addEventListener('submit', async (e) => {
   e.preventDefault();
-  
+
   const name = document.getElementById('name').value.trim();
   const email = document.getElementById('email').value.trim();
   const doctorID = document.getElementById('doctorID').value.trim();
   const defaultPassword = "doctor1234";
 
-  // Validate inputs
   if (!name || !email || !doctorID) {
     alert("Please fill all fields.");
     return;
   }
 
   try {
-    // Query Firestore to check if Doctor ID already exists
+    // Check if doctorID already taken
     const doctorQuery = query(collection(db, "doctors"), where("doctorID", "==", doctorID));
-    const querySnapshot = await getDocs(doctorQuery);
+    const doctorSnapshot = await getDocs(doctorQuery);
 
-    if (!querySnapshot.empty) {
+    if (!doctorSnapshot.empty) {
       alert("Doctor ID already taken! Please choose a different Doctor ID.");
       return;
     }
 
-    // Register Doctor
+    // Check if email already registered as a patient
+    const patientQuery = query(collection(db, "patients"), where("email", "==", email));
+    const patientSnapshot = await getDocs(patientQuery);
+
+    if (!patientSnapshot.empty) {
+      alert("This email is already registered as a patient.");
+      return;
+    }
+
+    // Now create doctor account
     const userCredential = await createUserWithEmailAndPassword(auth, email, defaultPassword);
     const user = userCredential.user;
 
-    // Save Doctor data to Firestore
     await setDoc(doc(db, "doctors", user.uid), {
       name: name,
       email: email,
@@ -52,12 +59,16 @@ document.getElementById('doctorRegisterForm').addEventListener('submit', async (
       uid: user.uid
     });
 
-    // Send email verification
     await sendEmailVerification(user);
     alert(`Registered Successfully!\n\nDefault Password: doctor1234\n\nPlease verify your email and remember your Doctor ID: ${doctorID}`);
 
   } catch (error) {
     console.error("Error registering doctor:", error);
-    alert("An error occurred while registering the doctor. Please try again.");
+
+    if (error.code === "auth/email-already-in-use") {
+      alert("This email is already registered. Please use a different email.");
+    } else {
+      alert("An error occurred while registering the doctor. Please try again.");
+    }
   }
 });

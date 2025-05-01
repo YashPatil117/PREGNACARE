@@ -1,8 +1,10 @@
-import { auth, db } from './firebase-config.js'; // your firebase setup
+import { auth, db } from './firebase-config.js';
+import { collection, query, where, getDocs, addDoc } from 'firebase/firestore';
+import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from 'firebase/auth';
 
 const doctorNameSpan = document.getElementById('doctorName');
 const logoutBtn = document.getElementById('logoutBtn');
-const greetingText = document.getElementById('greetingText');  // New greeting element
+const greetingText = document.getElementById('greetingText');
 
 // Sections
 const sections = document.querySelectorAll('.section');
@@ -15,10 +17,9 @@ window.showSection = function(sectionId) {
 // Load Doctor Info
 auth.onAuthStateChanged(async user => {
   if (user) {
-    const doctorName = user.displayName || "Doctor";
+    const doctorName = user.displayName || "";
     doctorNameSpan.textContent = doctorName;
-    greetingText.textContent = `Hello Doctor ${doctorName} !!`;  // Display greeting
-
+    greetingText.textContent = `Hello Doctor ${doctorName} !!`;
     await loadPatients();
   } else {
     window.location.href = "doctorlogin.html";
@@ -40,18 +41,21 @@ async function loadPatients() {
   const user = auth.currentUser;
   if (!user) return;
 
-  const snapshot = await db.collection('patients').where('assignedDoctorID', '==', user.uid).get();
+  const q = query(collection(db, 'patients'), where('assignedDoctorID', '==', user.uid));
+  const snapshot = await getDocs(q);
   patientList.innerHTML = '';
 
   snapshot.forEach(doc => {
     const patient = doc.data();
+    const fullName = patient.fullName || `${patient.firstName || ''} ${patient.lastName || ''}`.trim();
+
     const li = document.createElement('li');
-    li.textContent = `${patient.fullName || patient.firstName + " " + patient.lastName}`;
+    li.textContent = fullName;
     patientList.appendChild(li);
 
     const option = document.createElement('option');
     option.value = doc.id;
-    option.textContent = `${patient.fullName || patient.firstName + " " + patient.lastName}`;
+    option.textContent = fullName;
     patientSelect.appendChild(option);
   });
 }
@@ -88,10 +92,24 @@ document.getElementById('pregnancyForm').addEventListener('submit', async (e) =>
     assignedDoctorID: auth.currentUser.uid
   };
 
-  await db.collection('patients').add(formData);
-  alert('Pregnancy Registered Successfully!');
-  document.getElementById('pregnancyForm').reset();
-  await loadPatients();
+  // Validate required fields
+  const requiredFields = ['firstName', 'lastName', 'age', 'dob', 'mobile', 'husbandName', 'address'];
+  const missingFields = requiredFields.filter(field => !formData[field]);
+
+  if (missingFields.length > 0) {
+    alert("Please fill all required fields!");
+    return;
+  }
+
+  try {
+    await addDoc(collection(db, 'patients'), formData);
+    alert('Pregnancy Registered Successfully!');
+    document.getElementById('pregnancyForm').reset();
+    await loadPatients();
+  } catch (error) {
+    console.error(error);
+    alert('Error registering pregnancy.');
+  }
 });
 
 // Change Password
@@ -112,14 +130,11 @@ document.getElementById('changePasswordForm').addEventListener('submit', async (
   }
 
   const user = auth.currentUser;
-  const credential = firebase.auth.EmailAuthProvider.credential(user.email, currentPassword);
+  const credential = EmailAuthProvider.credential(user.email, currentPassword);
 
   try {
-    // Reauthenticate to allow password change
-    await user.reauthenticateWithCredential(credential);
-
-    // Change password
-    await user.updatePassword(newPassword);
+    await reauthenticateWithCredential(user, credential);
+    await updatePassword(user, newPassword);
     passwordSuccess.style.display = 'block';
     passwordError.style.display = 'none';
   } catch (error) {

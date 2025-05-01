@@ -1,116 +1,133 @@
+/* doctor_dashboard.css */
+
 body {
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: #f0f8ff;
   display: flex;
+  height: 100vh;
+  background-color: #0e0f13;
+  color: white;
 }
 
 .sidebar {
   width: 250px;
-  background: #00796b;
+  background: linear-gradient(to bottom, #4a00e0, #8e2de2);
   color: white;
   padding: 20px;
   display: flex;
   flex-direction: column;
-  align-items: start;
-  height: 100vh;
+  gap: 15px;
 }
 
 .sidebar h2 {
-  margin-bottom: 30px;
+  margin: 0 0 10px;
+  font-size: 24px;
+}
+
+.sidebar h3 {
+  margin-bottom: 20px;
+  font-weight: normal;
 }
 
 .sidebar button {
-  background: none;
-  border: none;
+  background: transparent;
   color: white;
-  margin: 10px 0;
-  font-size: 18px;
-  cursor: pointer;
-  width: 100%;
+  border: none;
+  padding: 10px;
   text-align: left;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s;
+  border-radius: 8px;
 }
 
 .sidebar button:hover {
   background: rgba(255, 255, 255, 0.2);
-  border-radius: 5px;
-  padding-left: 5px;
 }
 
 .sidebar .logout {
   margin-top: auto;
-  background: #c62828;
-  padding: 10px;
-  border-radius: 5px;
+  background-color: rgba(255, 0, 0, 0.7);
+  border-radius: 8px;
 }
 
 .main {
-  flex: 1;
-  padding: 30px;
+  flex-grow: 1;
+  padding: 20px;
   overflow-y: auto;
+}
+
+.greeting {
+  font-size: 24px;
+  margin-bottom: 20px;
 }
 
 .section {
-  background: white;
+  background-color: #1a1b1e;
   padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 5px 10px rgba(0,0,0,0.1);
-}
-
-ul#patientList {
-  list-style: none;
-  padding: 0;
-}
-
-ul#patientList li {
-  background: #e0f7fa;
-  margin: 10px 0;
-  padding: 10px;
-  border-radius: 5px;
-}
-
-.chat-box {
-  background: #f1f1f1;
-  height: 300px;
-  overflow-y: auto;
-  margin: 10px 0;
-  padding: 10px;
-  border-radius: 5px;
-}
-
-input, textarea, select {
-  width: 100%;
-  margin: 10px 0;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-button[type="submit"], button[onclick="sendMessage()"] {
-  background-color: #00796b;
-  color: white;
-  border: none;
-  padding: 10px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #004d40;
+  border-radius: 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
 }
 
 .form-row {
   display: flex;
   gap: 10px;
+  margin-bottom: 15px;
 }
 
-.form-row input {
-  flex: 1;
+input[type="text"],
+input[type="number"],
+input[type="date"],
+input[type="password"],
+input[type="email"],
+textarea,
+select {
+  background-color: #2c2f33;
+  border: none;
+  padding: 10px;
+  border-radius: 10px;
+  color: white;
+  width: 100%;
 }
 
-.greeting {
-  font-size: 28px;
+textarea {
+  resize: none;
+  height: 80px;
+}
+
+button[type="submit"],
+button {
+  background-color: #ffc107;
+  color: #000;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 12px;
   font-weight: bold;
-  margin-bottom: 20px;
-  color: #004d40;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background-color: #e0a800;
+}
+
+#chatMessages {
+  background-color: #2a2d32;
+  height: 200px;
+  border-radius: 10px;
+  padding: 10px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+}
+
+input#chatInput {
+  width: calc(100% - 100px);
+  display: inline-block;
+  margin-right: 10px;
+}
+
+#passwordError,
+#passwordSuccess {
+  margin-top: 10px;
 }
