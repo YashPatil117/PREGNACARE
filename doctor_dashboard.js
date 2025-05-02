@@ -1,38 +1,38 @@
 import { auth, db } from './firebase-config.js';
 import { collection, query, where, getDocs, addDoc } from 'firebase/firestore';
 import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from 'firebase/auth';
-import { sendEmailToPatient } from './emailService.js'; // Assume email service is implemented in this file
+import { sendEmailToPatient } from './emailService.js';
 
 const doctorNameSpan = document.getElementById('doctorName');
 const logoutBtn = document.getElementById('logoutBtn');
 const greetingText = document.getElementById('greetingText');
-
-// Sections
 const sections = document.querySelectorAll('.section');
 
-window.showSection = function(sectionId) {
+// Show Section
+window.showSection = function (sectionId) {
   sections.forEach(section => section.style.display = 'none');
   document.getElementById(sectionId).style.display = 'block';
-}
+};
 
-// Load Doctor Info
+// On Auth
 auth.onAuthStateChanged(async user => {
   if (user) {
-    const doctorName = user.displayName || "";
+    const doctorName = user.displayName || '';
     doctorNameSpan.textContent = doctorName;
     greetingText.textContent = `Hello Doctor ${doctorName} !!`;
     await loadPatients();
   } else {
-    window.location.href = "doctorlogin.html";
+    window.location.href = 'doctorlogin.html';
   }
 });
 
 // Logout
 logoutBtn.addEventListener('click', () => {
-  auth.signOut().then(() => window.location.href = "doctorlogin.html");
+  auth.signOut().then(() => (window.location.href = 'doctorlogin.html'));
 });
 
 // Load Patients
+let patientsCache = [];
 async function loadPatients() {
   const patientList = document.getElementById('patientList');
   const patientSelect = document.getElementById('patientSelect');
@@ -45,6 +45,7 @@ async function loadPatients() {
   const q = query(collection(db, 'patients'), where('assignedDoctorID', '==', user.uid));
   const snapshot = await getDocs(q);
   patientList.innerHTML = '';
+  patientsCache = [];
 
   snapshot.forEach(doc => {
     const patient = doc.data();
@@ -59,13 +60,13 @@ async function loadPatients() {
     option.textContent = fullName;
     patientSelect.appendChild(option);
 
-    // Check for upcoming due month (for email reminder)
+    patientsCache.push(patient);
     sendEmailReminder(patient);
   });
 }
 
-// Simple Chat (Demo)
-window.sendMessage = function() {
+// Chat
+window.sendMessage = function () {
   const messageBox = document.getElementById('chatMessages');
   const input = document.getElementById('chatInput');
 
@@ -76,10 +77,10 @@ window.sendMessage = function() {
     input.value = '';
     messageBox.scrollTop = messageBox.scrollHeight;
   }
-}
+};
 
 // Register Pregnancy
-document.getElementById('pregnancyForm').addEventListener('submit', async (e) => {
+document.getElementById('pregnancyForm').addEventListener('submit', async e => {
   e.preventDefault();
 
   const formData = {
@@ -94,15 +95,14 @@ document.getElementById('pregnancyForm').addEventListener('submit', async (e) =>
     email: document.getElementById('email').value.trim(),
     medicalHistory: document.getElementById('medicalHistory').value.trim(),
     assignedDoctorID: auth.currentUser.uid,
-    pregnancyStartDate: new Date(), // Record the start date of pregnancy
+    pregnancyStartDate: new Date(),
   };
 
-  // Validate required fields
   const requiredFields = ['firstName', 'lastName', 'age', 'dob', 'mobile', 'husbandName', 'address'];
   const missingFields = requiredFields.filter(field => !formData[field]);
 
   if (missingFields.length > 0) {
-    alert("Please fill all required fields!");
+    alert('Please fill all required fields!');
     return;
   }
 
@@ -118,7 +118,7 @@ document.getElementById('pregnancyForm').addEventListener('submit', async (e) =>
 });
 
 // Change Password
-document.getElementById('changePasswordForm').addEventListener('submit', async (e) => {
+document.getElementById('changePasswordForm').addEventListener('submit', async e => {
   e.preventDefault();
 
   const currentPassword = document.getElementById('currentPassword').value.trim();
@@ -148,16 +148,37 @@ document.getElementById('changePasswordForm').addEventListener('submit', async (
   }
 });
 
-// Check pregnancy month and send reminder
+// Send Reminder to Patient
 async function sendEmailReminder(patient) {
-  const pregnancyStartDate = patient.pregnancyStartDate.toDate(); // Convert to a JS Date object
-  const currentDate = new Date();
+  try {
+    const pregnancyStartDate = patient.pregnancyStartDate?.toDate?.() || new Date(patient.pregnancyStartDate);
+    const currentDate = new Date();
 
-  // Calculate the difference in months
-  const monthDiff = (currentDate.getFullYear() - pregnancyStartDate.getFullYear()) * 12 + currentDate.getMonth() - pregnancyStartDate.getMonth();
+    const monthDiff = (currentDate.getFullYear() - pregnancyStartDate.getFullYear()) * 12 +
+      (currentDate.getMonth() - pregnancyStartDate.getMonth());
 
-  if (monthDiff > 0 && monthDiff <= 9) {
-    const monthMessage = `You are now in the ${monthDiff}th month of your pregnancy. Keep up with your care!`;
-    await sendEmailToPatient(patient.email, `Pregnancy Update: Month ${monthDiff}`, monthMessage);
+    if (monthDiff > 0 && monthDiff <= 9 && patient.email) {
+      const monthMessage = `You are now in the ${monthDiff}th month of your pregnancy. Keep up with your care!`;
+      await sendEmailToPatient(patient.email, `Pregnancy Update: Month ${monthDiff}`, monthMessage);
+    }
+  } catch (e) {
+    console.warn("Error in sendEmailReminder:", e);
   }
 }
+
+// Global send to everyone
+window.sendMailToEveryone = async function () {
+  if (patientsCache.length === 0) {
+    alert("No patients to send mail to.");
+    return;
+  }
+
+  const confirmSend = confirm("Are you sure you want to send monthly update emails to all patients?");
+  if (!confirmSend) return;
+
+  for (const patient of patientsCache) {
+    await sendEmailReminder(patient);
+  }
+
+  alert("Mails sent to all patients.");
+};

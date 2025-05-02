@@ -13,6 +13,7 @@ const auth = firebase.auth();
 
 const reportBtn = document.getElementById("reportPregnancyBtn");
 const chatBtn = document.getElementById("chatBtn");
+const sendMailsBtn = document.getElementById("sendMailsBtn");
 const dueDateEl = document.getElementById("due-date");
 const inbox = document.getElementById("inbox");
 
@@ -36,10 +37,8 @@ auth.onAuthStateChanged(async user => {
       reportBtn.style.display = "inline-block";
     }
 
-    // Hide all sections
     document.querySelectorAll("section").forEach(s => s.style.display = "none");
 
-    // Show message to report pregnancy
     const msg = document.createElement("section");
     msg.innerHTML = `<h2>Please report your pregnancy to unlock full dashboard access.</h2>`;
     document.querySelector(".main-content").appendChild(msg);
@@ -73,6 +72,30 @@ function loadInbox(uid) {
   });
 }
 
+// Sidebar navigation logic
+const sections = {
+  navDashboard: ["inbox", "pregnancyProgress", "healthTracker"],
+  navInbox: ["inbox"],
+  navAppointments: ["appointments"],
+  navProgress: ["pregnancyProgress"],
+  navTracker: ["healthTracker"],
+  navResources: ["resources"]
+};
+
+Object.keys(sections).forEach(id => {
+  const navItem = document.getElementById(id);
+  if (navItem) {
+    navItem.addEventListener("click", e => {
+      e.preventDefault();
+      document.querySelectorAll("main section").forEach(s => s.style.display = "none");
+      sections[id].forEach(secId => {
+        const el = document.getElementById(secId);
+        if (el) el.style.display = "block";
+      });
+    });
+  }
+});
+
 // Redirect to report page
 if (reportBtn) {
   reportBtn.addEventListener("click", () => {
@@ -80,10 +103,17 @@ if (reportBtn) {
   });
 }
 
-// Chat with Doctor functionality (Optional)
+// Chat with Doctor
 if (chatBtn) {
   chatBtn.addEventListener("click", () => {
-    window.location.href = "chat.html"; // Adjust as needed
+    window.location.href = "chat.html";
+  });
+}
+
+// Send Mails (stub logic)
+if (sendMailsBtn) {
+  sendMailsBtn.addEventListener("click", () => {
+    alert("Send mail triggered (plug in EmailJS or your own logic here).");
   });
 }
 

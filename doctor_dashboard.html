@@ -4,6 +4,25 @@
   <meta charset="UTF-8">
   <title>Doctor Dashboard - PREGNACARE</title>
   <link rel="stylesheet" href="doctor_dashboard.css">
+  <style>
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+    }
+    .send-mail-btn {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 14px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .send-mail-btn:hover {
+      background-color: #45a049;
+    }
+  </style>
 </head>
 <body>
 
@@ -15,12 +34,13 @@
   <button onclick="showSection('registerSection')">Register Pregnancy</button>
   <button onclick="showSection('changePasswordSection')">Change Password</button>
   <button id="logoutBtn" class="logout">Logout</button>
-  <!-- New Button for sending mail to everyone -->
-  <button onclick="sendMailToEveryone()">Send Mail to Everyone</button>
 </div>
 
 <div class="main">
-  <div class="greeting" id="greetingText">Hello Doctor !!</div>
+  <div class="topbar">
+    <div class="greeting" id="greetingText">Hello Doctor !!</div>
+    <button class="send-mail-btn" onclick="sendMailToEveryone()">Send Mail to Everyone</button>
+  </div>
 
   <!-- Patients List -->
   <div id="patientsSection" class="section">
