@@ -79,6 +79,9 @@ function sendEmailToPatient(patientData) {
         reply_to: patientData.email,
     };
 
+    console.log("EmailJS templateId:", templateId);  // Debugging: Check templateId
+    console.log("EmailJS emailParams:", emailParams); // Debugging: Check emailParams
+
     emailjs.send("service_2yyas18", templateId, emailParams)
         .then(response => {
             console.log('Email sent successfully:', response);
