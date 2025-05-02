@@ -7,11 +7,11 @@ npm install firebase-admin emailjs-com
 
 
 email js  service key : service_2yyas18
-public key : lUOvxp6yj6uAY_893
-
+public key : gQHn8KnqdUXOoFzGl
 
 once added: firebase deploy --only functions
 
 
 template 1 = template_xun19bp
 template 2 = template_panjjcp
+

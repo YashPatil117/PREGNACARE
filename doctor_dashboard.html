@@ -6,17 +6,9 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-  <!-- <script src="https://smtpjs.com/v3/smtp.js"></script> -->
   <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
-  <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
-
   <style>
-    /* your CSS pasted from earlier */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Segoe UI', sans-serif;
       background-color: #121a24;
@@ -24,10 +16,7 @@
       display: flex;
       height: 100vh;
     }
-    .main-container {
-      display: flex;
-      width: 100%;
-    }
+    .main-container { display: flex; width: 100%; }
     .sidebar {
       width: 240px;
       background-color: #00796b;
@@ -35,21 +24,10 @@
       display: flex;
       flex-direction: column;
     }
-    .sidebar h2 {
-      color: white;
-      margin-bottom: 30px;
-      font-size: 1.5em;
-    }
-    .sidebar ul {
-      list-style: none;
-    }
-    .sidebar ul li {
-      margin: 10px 0;
-    }
-    .sidebar ul li a {
-      color: #ffffff;
-      text-decoration: none;
-    }
+    .sidebar h2 { color: white; margin-bottom: 30px; font-size: 1.5em; }
+    .sidebar ul { list-style: none; }
+    .sidebar ul li { margin: 10px 0; }
+    .sidebar ul li a { color: #ffffff; text-decoration: none; }
     .logout {
       margin-top: auto;
       background-color: #d32f2f;
@@ -117,7 +95,6 @@
   </div>
 
   <script>
-    // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyAAdjeTlV3QD7RNuhJeuIo8Vp2tftjbE1k",
       authDomain: "pregnacare-70aed.firebaseapp.com",
@@ -129,11 +106,9 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // EmailJS Configuration
     const service_id = 'service_2yyas18';
-    const user_id = 'user_GIT8geTjaArfMDEOZfzpD';
-    
-    // Pregnancy messages for each month
+    const user_id = 'gQHn8KnqdUXOoFzGl';
+
     const pregnancyMessages = [
       "Congratulations on your pregnancy! It's still early, but your baby is beginning to form.",
       "The first trimester is almost over! Your baby's heart is now beating and growing fast.",
@@ -152,10 +127,12 @@
         return;
       }
 
-      // Load patients
-      db.collection("women").where("doctorId", "==", "asd1234").get()
+      const doctorId = user.uid;
+
+      db.collection("women").where("doctorId", "==", doctorId).get()
         .then(snapshot => {
-          document.getElementById("patientList").innerHTML = "";
+          const list = document.getElementById("patientList");
+          list.innerHTML = "";
           snapshot.forEach(doc => {
             const data = doc.data();
             const li = document.createElement("li");
@@ -166,18 +143,16 @@
               Last Email Sent: ${data.lastEmailSent ? new Date(data.lastEmailSent.seconds * 1000).toLocaleDateString() : "N/A"}
             `;
             li.setAttribute("data-id", doc.id);
-            document.getElementById("patientList").appendChild(li);
+            list.appendChild(li);
           });
         });
 
-      // Logout
       document.getElementById("logoutBtn").addEventListener("click", () => {
         firebase.auth().signOut().then(() => {
           window.location.href = "doctorlogin.html";
         });
       });
 
-      // Send Monthly Emails
       document.getElementById("sendEmailsBtn").addEventListener("click", () => {
         const patients = document.querySelectorAll("#patientList li");
         patients.forEach(li => {
@@ -191,7 +166,6 @@
               const message = pregnancyMessages[patient.month - 1];
               const templateKey = patient.month <= 4 ? 'template_xun19bp' : 'template_panjjcp';
 
-              // Send email using EmailJS
               emailjs.send(service_id, templateKey, {
                 to_name: patient.fname + ' ' + patient.lname,
                 to_email: patient.email,
@@ -208,6 +182,20 @@
             }
           });
         });
+      });
+
+      document.getElementById("changePasswordForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+        const user = firebase.auth().currentUser;
+        const oldPassword = document.getElementById("oldPassword").value;
+        const newPassword = document.getElementById("newPassword").value;
+
+        const credential = firebase.auth.EmailAuthProvider.credential(user.email, oldPassword);
+
+        user.reauthenticateWithCredential(credential)
+          .then(() => user.updatePassword(newPassword))
+          .then(() => alert("Password updated successfully."))
+          .catch(error => alert("Error: " + error.message));
       });
     });
   </script>
