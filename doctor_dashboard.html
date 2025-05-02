@@ -1,104 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Doctor Dashboard - PREGNACARE</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Doctor Dashboard</title>
   <link rel="stylesheet" href="doctor_dashboard.css">
-  <style>
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 20px;
-    }
-    .send-mail-btn {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      padding: 10px 14px;
-      cursor: pointer;
-      border-radius: 5px;
-    }
-    .send-mail-btn:hover {
-      background-color: #45a049;
-    }
-  </style>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+  <script src="https://smtpjs.com/v3/smtp.js"></script>
 </head>
 <body>
-
-<div class="sidebar">
-  <h2>PREGNACARE</h2>
-  <h3 id="doctorName">Doctor</h3>
-  <button onclick="showSection('patientsSection')">Patients</button>
-  <button onclick="showSection('chatSection')">Chat</button>
-  <button onclick="showSection('registerSection')">Register Pregnancy</button>
-  <button onclick="showSection('changePasswordSection')">Change Password</button>
-  <button id="logoutBtn" class="logout">Logout</button>
-</div>
-
-<div class="main">
-  <div class="topbar">
-    <div class="greeting" id="greetingText">Hello Doctor !!</div>
-    <button class="send-mail-btn" onclick="sendMailToEveryone()">Send Mail to Everyone</button>
-  </div>
-
-  <!-- Patients List -->
-  <div id="patientsSection" class="section">
-    <h2>Patients Assigned</h2>
-    <ul id="patientList"></ul>
-  </div>
-
-  <!-- Chat Section -->
-  <div id="chatSection" class="section" style="display: none;">
-    <h2>Chat with Patient</h2>
-    <select id="patientSelect">
-      <option value="">Select Patient</option>
-    </select>
-    <div id="chatMessages" class="chat-box"></div>
-    <input type="text" id="chatInput" placeholder="Type a message...">
-    <button onclick="sendMessage()">Send</button>
-  </div>
-
-  <!-- Register Pregnancy Section -->
-  <div id="registerSection" class="section" style="display: none;">
-    <h2>Register New Pregnancy</h2>
-    <form id="pregnancyForm">
-      <div class="form-row">
-        <input type="text" id="firstName" placeholder="First Name" required>
-        <input type="text" id="middleName" placeholder="Middle Name">
-        <input type="text" id="lastName" placeholder="Last Name" required>
+  <div class="main-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div>
+        <h2>Pregnacare</h2>
+        <nav>
+          <p class="section-title">Doctor Panel</p>
+          <ul>
+            <li><a href="#">Dashboard</a></li>
+            <li><a href="#">My Patients</a></li>
+            <li><a href="#">Messages</a></li>
+          </ul>
+        </nav>
       </div>
-      <div class="form-row">
-        <input type="number" id="age" placeholder="Age" required>
-        <input type="date" id="dob" placeholder="Date of Birth" required>
+      <button class="logout">Logout</button>
+    </div>
+
+    <!-- Dashboard content -->
+    <div class="dashboard-content">
+      <h1>Welcome, Dr. Mahesh Mahant</h1>
+
+      <div class="card">
+        <h2>Assigned Patients</h2>
+        <div class="card-body">
+          <ul id="patientList">Loading...</ul>
+          <br>
+          <button id="sendEmailsBtn">Send Monthly Emails</button>
+        </div>
       </div>
-      <div class="form-row">
-        <input type="text" id="mobile" placeholder="Mobile Number" required>
-        <input type="text" id="husbandName" placeholder="Husband's Name" required>
-      </div>
-      <textarea id="address" placeholder="Address" required></textarea>
-      <input type="email" id="email" placeholder="Email (optional)">
-      <textarea id="medicalHistory" placeholder="Brief Medical History"></textarea>
-      <button type="submit">Register Pregnancy</button>
-    </form>
+    </div>
   </div>
 
-  <!-- Change Password Section -->
-  <div id="changePasswordSection" class="section" style="display: none;">
-    <h2>Change Password</h2>
-    <form id="changePasswordForm">
-      <div class="form-row">
-        <input type="password" id="currentPassword" placeholder="Current Password" required>
-        <input type="password" id="newPassword" placeholder="New Password" required>
-        <input type="password" id="confirmNewPassword" placeholder="Confirm New Password" required>
-      </div>
-      <button type="submit">Change Password</button>
-    </form>
-    <p id="passwordError" style="color: red; display: none;">Passwords do not match!</p>
-    <p id="passwordSuccess" style="color: green; display: none;">Password changed successfully!</p>
-  </div>
-</div>
-
-<script type="module" src="doctor_dashboard.js"></script>
+  <script src="doctor_dashboard.js"></script>
 </body>
 </html>

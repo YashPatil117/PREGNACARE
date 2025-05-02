@@ -1,184 +1,123 @@
-import { auth, db } from './firebase-config.js';
-import { collection, query, where, getDocs, addDoc } from 'firebase/firestore';
-import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from 'firebase/auth';
-import { sendEmailToPatient } from './emailService.js';
-
-const doctorNameSpan = document.getElementById('doctorName');
-const logoutBtn = document.getElementById('logoutBtn');
-const greetingText = document.getElementById('greetingText');
-const sections = document.querySelectorAll('.section');
-
-// Show Section
-window.showSection = function (sectionId) {
-  sections.forEach(section => section.style.display = 'none');
-  document.getElementById(sectionId).style.display = 'block';
+// Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyAAdjeTlV3QD7RNuhJeuIo8Vp2tftjbE1k",
+  authDomain: "pregnacare-70aed.firebaseapp.com",
+  projectId: "pregnacare-70aed",
+  storageBucket: "pregnacare-70aed.appspot.com",
+  messagingSenderId: "375969305451",
+  appId: "1:375969305451:web:82d4e1f90264cfa3f6f22e",
+  measurementId: "G-34LJE5R27W"
 };
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-// On Auth
-auth.onAuthStateChanged(async user => {
-  if (user) {
-    const doctorName = user.displayName || '';
-    doctorNameSpan.textContent = doctorName;
-    greetingText.textContent = `Hello Doctor ${doctorName} !!`;
-    await loadPatients();
-  } else {
-    window.location.href = 'doctorlogin.html';
-  }
-});
+// Doctor's unique ID (dummy)
+const doctorID = "doc123";
 
-// Logout
-logoutBtn.addEventListener('click', () => {
-  auth.signOut().then(() => (window.location.href = 'doctorlogin.html'));
-});
+// Messages per pregnancy month
+const pregnancyMessages = [
+  "Congratulations on your pregnancy! It's still early, but your baby is beginning to form.",
+  "The first trimester is almost over! Your baby's heart is now beating and growing fast.",
+  "By now, your baby is the size of a peach! Expecting some movements soon.",
+  "Your baby is growing stronger! Their organs are now functioning and they’re becoming more active.",
+  "Halfway there! Your baby can now hear sounds and may even respond to your touch.",
+  "The baby is getting bigger and stronger. They are starting to recognize voices!",
+  "Almost there! Your baby is practicing breathing and moving more vigorously.",
+  "In the final stretch! Your baby is preparing for birth and continues to grow.",
+  "It's time! Get ready for your baby's arrival, your little one is about to make their debut."
+];
 
-// Load Patients
-let patientsCache = [];
-async function loadPatients() {
-  const patientList = document.getElementById('patientList');
-  const patientSelect = document.getElementById('patientSelect');
-  patientList.innerHTML = '<li>Loading...</li>';
-  patientSelect.innerHTML = '<option value="">Select Patient</option>';
+// Load patients assigned to this doctor
+function loadPatients() {
+  db.collection("patients")
+    .where("doctorID", "==", doctorID)
+    .get()
+    .then(snapshot => {
+      const ul = document.getElementById("patientList");
+      ul.innerHTML = "";
 
-  const user = auth.currentUser;
-  if (!user) return;
+      if (snapshot.empty) {
+        ul.innerHTML = "<li>No patients assigned.</li>";
+        return;
+      }
 
-  const q = query(collection(db, 'patients'), where('assignedDoctorID', '==', user.uid));
-  const snapshot = await getDocs(q);
-  patientList.innerHTML = '';
-  patientsCache = [];
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const patient = {
+          id: doc.id,
+          name: data.name,
+          email: data.email,
+          pregnancyMonth: data.pregnancyMonth,
+          lastEmailSent: data.lastEmailSent
+        };
+        addPatientToUI(patient);
+      });
+    })
+    .catch(error => {
+      alert("Error loading patients: " + error.message);
+    });
+}
 
-  snapshot.forEach(doc => {
-    const patient = doc.data();
-    const fullName = patient.fullName || `${patient.firstName || ''} ${patient.lastName || ''}`.trim();
+// Add patient to the HTML
+function addPatientToUI(patient) {
+  const ul = document.getElementById("patientList");
+  const li = document.createElement("li");
+  li.setAttribute("data-id", patient.id);
+  li.innerHTML = `
+    <strong>${patient.name}</strong><br>
+    Email: ${patient.email}<br>
+    Month: ${patient.pregnancyMonth}<br>
+    Last Email Sent: ${patient.lastEmailSent ? new Date(patient.lastEmailSent.toDate()).toLocaleDateString() : "N/A"}
+  `;
+  ul.appendChild(li);
+}
 
-    const li = document.createElement('li');
-    li.textContent = fullName;
-    patientList.appendChild(li);
+// Send email via SMTP.js
+function sendEmailToPatient(patient) {
+  const month = patient.pregnancyMonth;
+  const message = pregnancyMessages[month - 1];
 
-    const option = document.createElement('option');
-    option.value = doc.id;
-    option.textContent = fullName;
-    patientSelect.appendChild(option);
+  const params = {
+    SecureToken: "YOUR_SMTP_SECURE_TOKEN", // use secure token from smtpjs.com (or your own config)
+    To: patient.email,
+    From: "YOUR_EMAIL@example.com",
+    Subject: `Pregnancy Update - Month ${month}`,
+    Body: `Hi ${patient.name},<br><br>You're in month ${month} of your pregnancy. Here's what to expect:<br><br>${message}<br><br>Stay healthy!<br>~ Pregnacare`
+  };
 
-    patientsCache.push(patient);
-    sendEmailReminder(patient);
+  Email.send(params)
+    .then(() => {
+      // Update Firestore
+      db.collection("patients")
+        .doc(patient.id)
+        .update({
+          lastEmailSent: firebase.firestore.FieldValue.serverTimestamp()
+        })
+        .then(() => alert(`Email sent to ${patient.name}`))
+        .catch(err => alert("Firestore update failed: " + err.message));
+    })
+    .catch(err => alert("Email failed: " + err.message));
+}
+
+// Send monthly emails (if not already sent this month)
+function sendMonthlyEmails() {
+  const patientElements = document.querySelectorAll("#patientList li");
+  patientElements.forEach(el => {
+    const id = el.getAttribute("data-id");
+    db.collection("patients").doc(id).get().then(doc => {
+      const data = doc.data();
+      const lastSent = data.lastEmailSent ? new Date(data.lastEmailSent.toDate()) : null;
+      const now = new Date();
+
+      if (!lastSent || lastSent.getMonth() !== now.getMonth() || lastSent.getFullYear() !== now.getFullYear()) {
+        sendEmailToPatient({ ...data, id });
+      }
+    });
   });
 }
 
-// Chat
-window.sendMessage = function () {
-  const messageBox = document.getElementById('chatMessages');
-  const input = document.getElementById('chatInput');
-
-  if (input.value.trim() !== '') {
-    const newMessage = document.createElement('div');
-    newMessage.textContent = `Doctor: ${input.value}`;
-    messageBox.appendChild(newMessage);
-    input.value = '';
-    messageBox.scrollTop = messageBox.scrollHeight;
-  }
-};
-
-// Register Pregnancy
-document.getElementById('pregnancyForm').addEventListener('submit', async e => {
-  e.preventDefault();
-
-  const formData = {
-    firstName: document.getElementById('firstName').value.trim(),
-    middleName: document.getElementById('middleName').value.trim(),
-    lastName: document.getElementById('lastName').value.trim(),
-    age: parseInt(document.getElementById('age').value.trim()),
-    dob: document.getElementById('dob').value.trim(),
-    mobile: document.getElementById('mobile').value.trim(),
-    husbandName: document.getElementById('husbandName').value.trim(),
-    address: document.getElementById('address').value.trim(),
-    email: document.getElementById('email').value.trim(),
-    medicalHistory: document.getElementById('medicalHistory').value.trim(),
-    assignedDoctorID: auth.currentUser.uid,
-    pregnancyStartDate: new Date(),
-  };
-
-  const requiredFields = ['firstName', 'lastName', 'age', 'dob', 'mobile', 'husbandName', 'address'];
-  const missingFields = requiredFields.filter(field => !formData[field]);
-
-  if (missingFields.length > 0) {
-    alert('Please fill all required fields!');
-    return;
-  }
-
-  try {
-    await addDoc(collection(db, 'patients'), formData);
-    alert('Pregnancy Registered Successfully!');
-    document.getElementById('pregnancyForm').reset();
-    await loadPatients();
-  } catch (error) {
-    console.error(error);
-    alert('Error registering pregnancy.');
-  }
-});
-
-// Change Password
-document.getElementById('changePasswordForm').addEventListener('submit', async e => {
-  e.preventDefault();
-
-  const currentPassword = document.getElementById('currentPassword').value.trim();
-  const newPassword = document.getElementById('newPassword').value.trim();
-  const confirmNewPassword = document.getElementById('confirmNewPassword').value.trim();
-
-  const passwordError = document.getElementById('passwordError');
-  const passwordSuccess = document.getElementById('passwordSuccess');
-
-  if (newPassword !== confirmNewPassword) {
-    passwordError.style.display = 'block';
-    passwordSuccess.style.display = 'none';
-    return;
-  }
-
-  const user = auth.currentUser;
-  const credential = EmailAuthProvider.credential(user.email, currentPassword);
-
-  try {
-    await reauthenticateWithCredential(user, credential);
-    await updatePassword(user, newPassword);
-    passwordSuccess.style.display = 'block';
-    passwordError.style.display = 'none';
-  } catch (error) {
-    passwordError.style.display = 'block';
-    passwordSuccess.style.display = 'none';
-  }
-});
-
-// Send Reminder to Patient
-async function sendEmailReminder(patient) {
-  try {
-    const pregnancyStartDate = patient.pregnancyStartDate?.toDate?.() || new Date(patient.pregnancyStartDate);
-    const currentDate = new Date();
-
-    const monthDiff = (currentDate.getFullYear() - pregnancyStartDate.getFullYear()) * 12 +
-      (currentDate.getMonth() - pregnancyStartDate.getMonth());
-
-    if (monthDiff > 0 && monthDiff <= 9 && patient.email) {
-      const monthMessage = `You are now in the ${monthDiff}th month of your pregnancy. Keep up with your care!`;
-      await sendEmailToPatient(patient.email, `Pregnancy Update: Month ${monthDiff}`, monthMessage);
-    }
-  } catch (e) {
-    console.warn("Error in sendEmailReminder:", e);
-  }
-}
-
-// Global send to everyone
-window.sendMailToEveryone = async function () {
-  if (patientsCache.length === 0) {
-    alert("No patients to send mail to.");
-    return;
-  }
-
-  const confirmSend = confirm("Are you sure you want to send monthly update emails to all patients?");
-  if (!confirmSend) return;
-
-  for (const patient of patientsCache) {
-    await sendEmailReminder(patient);
-  }
-
-  alert("Mails sent to all patients.");
+// Initialize after DOM loads
+window.onload = function () {
+  loadPatients();
+  document.getElementById("sendEmailsBtn").addEventListener("click", sendMonthlyEmails);
 };
