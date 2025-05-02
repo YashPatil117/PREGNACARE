@@ -11,3 +11,7 @@ public key : lUOvxp6yj6uAY_893
 
 
 once added: firebase deploy --only functions
+
+
+template 1 = template_xun19bp
+template 2 = template_panjjcp
