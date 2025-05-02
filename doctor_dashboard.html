@@ -6,7 +6,7 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-  <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3.2.0/dist/email.min.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -27,7 +27,17 @@
     .sidebar h2 { color: white; margin-bottom: 30px; font-size: 1.5em; }
     .sidebar ul { list-style: none; }
     .sidebar ul li { margin: 10px 0; }
-    .sidebar ul li a { color: #ffffff; text-decoration: none; }
+    .sidebar ul li a { 
+      color: #ffffff; 
+      text-decoration: none;
+      display: block;
+      padding: 8px;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+    .sidebar ul li a:hover {
+      background-color: #00695c;
+    }
     .logout {
       margin-top: auto;
       background-color: #d32f2f;
@@ -36,11 +46,16 @@
       padding: 12px;
       border-radius: 5px;
       cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .logout:hover {
+      background-color: #b71c1c;
     }
     .dashboard-content {
       flex-grow: 1;
       padding: 40px;
       background-color: #0f1722;
+      overflow-y: auto;
     }
     .dashboard-content h1 {
       font-size: 1.8em;
@@ -52,14 +67,86 @@
       border-radius: 10px;
       padding: 20px;
       box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-      max-width: 600px;
+      max-width: 800px;
       margin-bottom: 20px;
     }
     .card-body {
       background-color: #00332f;
-      padding: 10px;
+      padding: 15px;
       border-radius: 5px;
       color: #b2dfdb;
+    }
+    input[type="password"], input[type="text"], button {
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 5px;
+      border: 1px solid #00796b;
+    }
+    input[type="password"], input[type="text"] {
+      width: 100%;
+      background-color: #0f1722;
+      color: white;
+      border: 1px solid #00796b;
+    }
+    button {
+      background-color: #00796b;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #00695c;
+    }
+    #changePasswordForm { display: none; }
+    #loadingIndicator {
+      display: none;
+      margin: 20px 0;
+      color: #9effcb;
+    }
+    .status-message {
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 5px;
+    }
+    .success { background-color: #2e7d32; }
+    .error { background-color: #c62828; }
+    .skipped { background-color: #FFC107; color: #000; }
+    #emailStatus {
+      max-height: 300px;
+      overflow-y: auto;
+      margin-top: 20px;
+      background: #1a1a1a;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    .patient-form {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .patient-form input {
+      padding: 10px;
+      flex-grow: 1;
+    }
+    #patientList li {
+      padding: 10px;
+      margin-bottom: 10px;
+      background-color: #002a26;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+    #patientList li:hover {
+      background-color: #004d40;
+    }
+    .patient-actions {
+      margin-top: 8px;
+      display: flex;
+      gap: 8px;
+    }
+    .patient-actions button {
+      padding: 5px 10px;
+      font-size: 0.8em;
     }
   </style>
 </head>
@@ -78,19 +165,29 @@
 
       <div class="card">
         <h2>Patients</h2>
-        <ul id="patientList" class="card-body"></ul>
+        <div class="patient-form">
+          <input type="text" id="searchPatient" placeholder="Search patients by name or email...">
+          <button id="searchBtn">Search</button>
+          <button id="clearSearchBtn">Clear</button>
+        </div>
+        <div id="patientList" class="card-body"></div>
       </div>
 
       <div class="card">
         <h2>Change Password</h2>
         <form id="changePasswordForm">
-          <input type="password" id="oldPassword" placeholder="Old Password" required><br><br>
-          <input type="password" id="newPassword" placeholder="New Password" required><br><br>
+          <input type="password" id="oldPassword" placeholder="Old Password" required>
+          <input type="password" id="newPassword" placeholder="New Password" required>
           <button type="submit">Change Password</button>
         </form>
       </div>
 
-      <button id="sendEmailsBtn">Send Monthly Emails</button>
+      <div class="card">
+        <h2>Email Management</h2>
+        <button id="sendEmailsBtn">Check & Send Monthly Emails</button>
+        <div id="loadingIndicator">Checking patients...</div>
+        <div id="emailStatus"></div>
+      </div>
     </div>
   </div>
 
@@ -103,22 +200,26 @@
       messagingSenderId: "375969305451",
       appId: "1:375969305451:web:82d4e1f90264cfa3f6f22e"
     };
+    
+    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-
-    const service_id = 'service_2yyas18';
-    const user_id = 'gQHn8KnqdUXOoFzGl';
+    
+    // Initialize EmailJS with your user ID
+    (function() {
+      emailjs.init('gQHn8KnqdUXOoFzGl');
+    })();
 
     const pregnancyMessages = [
-      "Congratulations on your pregnancy! It's still early, but your baby is beginning to form.",
-      "The first trimester is almost over! Your baby's heart is now beating and growing fast.",
-      "By now, your baby is the size of a peach! Expecting some movements soon.",
-      "Your baby is growing stronger! Their organs are now functioning and they’re becoming more active.",
-      "Halfway there! Your baby can now hear sounds and may even respond to your touch.",
-      "The baby is getting bigger and stronger. They are starting to recognize voices!",
-      "Almost there! Your baby is practicing breathing and moving more vigorously.",
-      "In the final stretch! Your baby is preparing for birth and continues to grow.",
-      "It's time! Get ready for your baby's arrival, your little one is about to make their debut."
+      "Month 1: Congratulations! Your baby is the size of a poppy seed.",
+      "Month 2: Your baby's heart has started beating!",
+      "Month 3: Your baby can now make tiny movements.",
+      "Month 4: You might start feeling baby kicks soon!",
+      "Month 5: Your baby can now hear your voice.",
+      "Month 6: Baby's eyes are opening and reacting to light.",
+      "Month 7: Your baby is practicing breathing movements.",
+      "Month 8: Baby is gaining about half a pound per week!",
+      "Month 9: Any day now! Your baby is fully developed."
     ];
 
     firebase.auth().onAuthStateChanged(user => {
@@ -127,75 +228,307 @@
         return;
       }
 
-      const doctorId = user.uid;
+      function addStatus(message, type = "") {
+        const div = document.createElement("div");
+        div.className = `status-message ${type}`;
+        div.textContent = message;
+        document.getElementById("emailStatus").appendChild(div);
+        // Auto-scroll to the bottom
+        document.getElementById("emailStatus").scrollTop = document.getElementById("emailStatus").scrollHeight;
+      }
 
-      db.collection("women").where("doctorId", "==", doctorId).get()
-        .then(snapshot => {
+      function calculateMonthsPregnant(startDate) {
+        const today = new Date();
+        const months = (today.getFullYear() - startDate.getFullYear()) * 12;
+        return months + today.getMonth() - startDate.getMonth();
+      }
+
+      function daysSinceLastEmail(lastEmailDate) {
+        if (!lastEmailDate) return Infinity;
+        const oneDay = 24 * 60 * 60 * 1000;
+        return Math.round(Math.abs((new Date() - lastEmailDate.toDate()) / oneDay));
+      }
+      
+      async function loadPatients(searchTerm = "") {
+        try {
+          let query = db.collection("women");
           const list = document.getElementById("patientList");
-          list.innerHTML = "";
-          snapshot.forEach(doc => {
-            const data = doc.data();
-            const li = document.createElement("li");
-            li.innerHTML = `
-              <strong>${data.fname} ${data.lname}</strong><br>
-              Email: ${data.email}<br>
-              Month: ${data.month}<br>
-              Last Email Sent: ${data.lastEmailSent ? new Date(data.lastEmailSent.seconds * 1000).toLocaleDateString() : "N/A"}
-            `;
-            li.setAttribute("data-id", doc.id);
-            list.appendChild(li);
-          });
-        });
-
-      document.getElementById("logoutBtn").addEventListener("click", () => {
-        firebase.auth().signOut().then(() => {
-          window.location.href = "doctorlogin.html";
-        });
-      });
-
-      document.getElementById("sendEmailsBtn").addEventListener("click", () => {
-        const patients = document.querySelectorAll("#patientList li");
-        patients.forEach(li => {
-          const patientID = li.getAttribute("data-id");
-          db.collection("women").doc(patientID).get().then(doc => {
-            const patient = doc.data();
-            const currentDate = new Date();
-            const lastEmailDate = patient.lastEmailSent ? new Date(patient.lastEmailSent.seconds * 1000) : null;
-
-            if (!lastEmailDate || lastEmailDate.getMonth() !== currentDate.getMonth()) {
-              const message = pregnancyMessages[patient.month - 1];
-              const templateKey = patient.month <= 4 ? 'template_xun19bp' : 'template_panjjcp';
-
-              emailjs.send(service_id, templateKey, {
-                to_name: patient.fname + ' ' + patient.lname,
-                to_email: patient.email,
-                message: message,
-                doctor_name: patient.doctorName,
-                pregnancy_month: patient.month
-              }).then(() => {
-                db.collection("women").doc(patientID).update({
-                  lastEmailSent: firebase.firestore.FieldValue.serverTimestamp()
-                });
-              }).catch(err => {
-                alert("Email error: " + err.message);
-              });
+          
+          if (searchTerm) {
+            // Search by name or email
+            const snapshot = await query.get();
+            list.innerHTML = "";
+            
+            const filteredPatients = snapshot.docs.filter(doc => {
+              const data = doc.data();
+              const fullName = `${data.fname || ''} ${data.lname || ''}`.toLowerCase();
+              const email = data.email ? data.email.toLowerCase() : '';
+              return fullName.includes(searchTerm.toLowerCase()) || 
+                     email.includes(searchTerm.toLowerCase());
+            });
+            
+            if (filteredPatients.length === 0) {
+              list.innerHTML = "<div>No patients found matching your search</div>";
+              return;
             }
+            
+            displayPatients(filteredPatients);
+          } else {
+            // Show all patients
+            const snapshot = await query.get();
+            list.innerHTML = "";
+            
+            if (snapshot.empty) {
+              list.innerHTML = "<div>No patients found</div>";
+              return;
+            }
+            
+            displayPatients(snapshot.docs);
+          }
+        } catch (error) {
+          console.error("Error loading patients:", error);
+          addStatus("Error loading patients: " + error.message, "error");
+        }
+      }
+      
+      function displayPatients(patients) {
+        const list = document.getElementById("patientList");
+        
+        patients.forEach(doc => {
+          const data = doc.data();
+          const patientDiv = document.createElement("div");
+          patientDiv.className = "patient-item";
+          patientDiv.innerHTML = `
+            <strong>${data.fname || 'Unknown'} ${data.lname || ''}</strong><br>
+            Email: ${data.email || 'Not provided'}<br>
+            Pregnancy Month: ${data.month || 'Not set'}<br>
+            Start Date: ${data.pregnancyStartDate?.toDate?.()?.toLocaleDateString() || 'Not set'}<br>
+            Last Email: ${data.lastEmailSent?.toDate?.()?.toLocaleDateString() || 'Never'}
+            <div class="patient-actions">
+              <button class="send-now-btn" data-id="${doc.id}">Send Email Now</button>
+            </div>
+          `;
+          list.appendChild(patientDiv);
+        });
+        
+        // Add event listeners to the new buttons
+        document.querySelectorAll('.send-now-btn').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const patientId = e.target.getAttribute('data-id');
+            await sendEmailToPatient(patientId);
           });
         });
+      }
+      
+      async function sendEmailToPatient(patientId) {
+        try {
+          const doc = await db.collection("women").doc(patientId).get();
+          if (!doc.exists) {
+            addStatus("Patient not found", "error");
+            return;
+          }
+          
+          const patient = doc.data();
+          if (!patient.email) {
+            addStatus(`Cannot send to ${patient.fname} - no email address`, "error");
+            return;
+          }
+          
+          let monthToSend = 1;
+          if (patient.pregnancyStartDate) {
+            monthToSend = calculateMonthsPregnant(patient.pregnancyStartDate.toDate()) + 1;
+          } else if (patient.month) {
+            monthToSend = patient.month;
+          }
+          
+          if (monthToSend > 9) monthToSend = 9;
+          
+          const success = await sendMonthlyEmail(patient, patientId, monthToSend);
+          
+          if (success) {
+            addStatus(`✓ Sent month ${monthToSend} email to ${patient.fname}`, "success");
+          } else {
+            addStatus(`✗ Failed to send to ${patient.fname}`, "error");
+          }
+          
+          // Refresh the patient list
+          loadPatients(document.getElementById("searchPatient").value.trim());
+        } catch (error) {
+          addStatus(`Error sending email: ${error.message}`, "error");
+        }
+      }
+
+      async function sendMonthlyEmail(patient, patientId, month) {
+        try {
+          // Validate month is within range
+          if (month < 1 || month > 9) {
+            addStatus(`Invalid month ${month} for ${patient.fname}`, "error");
+            return false;
+          }
+          
+          // Use a single template for all months (you can adjust this if needed)
+          const response = await emailjs.send('service_2yyas18', 'template_xun19bp', {
+            to_name: `${patient.fname} ${patient.lname}`,
+            to_email: patient.email,
+            message: pregnancyMessages[month - 1],
+            pregnancy_month: month
+          });
+          
+          // Update Firestore only if email was successfully sent
+          await db.collection("women").doc(patientId).update({
+            month: month,
+            lastEmailSent: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          
+          return true;
+        } catch (error) {
+          console.error("Email error:", error);
+          addStatus(`Email error for ${patient.fname}: ${error.message}`, "error");
+          return false;
+        }
+      }
+
+      // Initial load
+      loadPatients();
+
+      // Event listeners
+      document.getElementById("logoutBtn").addEventListener("click", () => {
+        firebase.auth().signOut();
       });
 
-      document.getElementById("changePasswordForm").addEventListener("submit", function (e) {
+      document.getElementById("changePasswordBtn").addEventListener("click", () => {
+        document.getElementById("changePasswordForm").style.display = 
+          document.getElementById("changePasswordForm").style.display === "block" ? "none" : "block";
+      });
+
+      document.getElementById("searchBtn").addEventListener("click", () => {
+        const searchTerm = document.getElementById("searchPatient").value.trim();
+        loadPatients(searchTerm);
+      });
+      
+      document.getElementById("clearSearchBtn").addEventListener("click", () => {
+        document.getElementById("searchPatient").value = "";
+        loadPatients();
+      });
+      
+      // Allow search on Enter key
+      document.getElementById("searchPatient").addEventListener("keyup", (e) => {
+        if (e.key === "Enter") {
+          const searchTerm = document.getElementById("searchPatient").value.trim();
+          loadPatients(searchTerm);
+        }
+      });
+
+      document.getElementById("sendEmailsBtn").addEventListener("click", async () => {
+        const btn = document.getElementById("sendEmailsBtn");
+        const loading = document.getElementById("loadingIndicator");
+        const statusDiv = document.getElementById("emailStatus");
+        
+        btn.disabled = true;
+        loading.style.display = "block";
+        statusDiv.innerHTML = "<div class='status-message'>Starting email check...</div>";
+
+        try {
+          const snapshot = await db.collection("women").get();
+          let emailsSent = 0;
+          let emailsSkipped = 0;
+
+          for (const doc of snapshot.docs) {
+            const patient = doc.data();
+            const patientId = doc.id;
+            
+            // Skip if email is missing
+            if (!patient.email) {
+              addStatus(`Skipped ${patient.fname} (missing email)`, "skipped");
+              emailsSkipped++;
+              continue;
+            }
+
+            // If no start date, check if they have a month value
+            if (!patient.pregnancyStartDate) {
+              if (patient.month) {
+                // If they have a month value but no start date, just increment their month
+                const daysSinceEmail = daysSinceLastEmail(patient.lastEmailSent);
+                
+                if (daysSinceEmail >= 28) {
+                  const success = await sendMonthlyEmail(patient, patientId, patient.month);
+                  
+                  if (success) {
+                    addStatus(`✓ Sent month ${patient.month} email to ${patient.fname} (no start date)`, "success");
+                    emailsSent++;
+                  } else {
+                    addStatus(`✗ Failed to send to ${patient.fname}`, "error");
+                    emailsSkipped++;
+                  }
+                } else {
+                  addStatus(`➔ ${patient.fname}: Waiting ${28 - daysSinceEmail} more days (no start date)`, "skipped");
+                  emailsSkipped++;
+                }
+              } else {
+                addStatus(`Skipped ${patient.fname} (no start date or month value)`, "skipped");
+                emailsSkipped++;
+              }
+              continue;
+            }
+
+            // For patients with start date
+            const startDate = patient.pregnancyStartDate.toDate();
+            const calculatedMonth = calculateMonthsPregnant(startDate) + 1; // +1 because pregnancy starts at month 1
+            const daysSinceEmail = daysSinceLastEmail(patient.lastEmailSent);
+
+            // Only send if:
+            // 1. Calculated month is different from stored month
+            // 2. At least 28 days since last email (approximate month)
+            if (calculatedMonth !== patient.month && daysSinceEmail >= 28) {
+              const success = await sendMonthlyEmail(patient, patientId, calculatedMonth);
+              
+              if (success) {
+                addStatus(`✓ Sent month ${calculatedMonth} email to ${patient.fname}`, "success");
+                emailsSent++;
+              } else {
+                addStatus(`✗ Failed to send to ${patient.fname}`, "error");
+                emailsSkipped++;
+              }
+            } else {
+              addStatus(`➔ ${patient.fname}: No month completion (Current: ${patient.month}, Calculated: ${calculatedMonth})`, "skipped");
+              emailsSkipped++;
+            }
+          }
+
+          addStatus(`Process complete. ${emailsSent} emails sent, ${emailsSkipped} skipped.`, "success");
+        } catch (error) {
+          addStatus(`Error: ${error.message}`, "error");
+        } finally {
+          btn.disabled = false;
+          loading.style.display = "none";
+          loadPatients(document.getElementById("searchPatient").value.trim()); // Refresh the list
+        }
+      });
+
+      document.getElementById("changePasswordForm").addEventListener("submit", function(e) {
         e.preventDefault();
         const user = firebase.auth().currentUser;
         const oldPassword = document.getElementById("oldPassword").value;
         const newPassword = document.getElementById("newPassword").value;
 
+        if (newPassword.length < 6) {
+          alert("Password should be at least 6 characters");
+          return;
+        }
+
         const credential = firebase.auth.EmailAuthProvider.credential(user.email, oldPassword);
 
         user.reauthenticateWithCredential(credential)
           .then(() => user.updatePassword(newPassword))
-          .then(() => alert("Password updated successfully."))
-          .catch(error => alert("Error: " + error.message));
+          .then(() => {
+            alert("Password updated successfully.");
+            document.getElementById("changePasswordForm").reset();
+            document.getElementById("changePasswordForm").style.display = "none";
+          })
+          .catch(error => {
+            console.error("Password change error:", error);
+            alert("Error: " + error.message);
+          });
       });
     });
   </script>
