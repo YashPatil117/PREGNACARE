@@ -3,7 +3,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyAAdjeTlV3QD7RNuhJeuIo8Vp2tftjbE1k",
   authDomain: "pregnacare-70aed.firebaseapp.com",
   projectId: "pregnacare-70aed",
-  storageBucket: "pregnacare-70aed.firebasestorage.app",
+  storageBucket: "pregnacare-70aed.appspot.com",
   messagingSenderId: "375969305451",
   appId: "1:375969305451:web:82d4e1f90264cfa3f6f22e",
   measurementId: "G-34LJE5R27W"
@@ -12,100 +12,89 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const auth = firebase.auth();
 
-// Initialize EmailJS
-emailjs.init("t3u-O3DqYyw900CBp"); // Replace with your actual EmailJS public key
+// EmailJS init
+emailjs.init("t3u-O3DqYyw900CBp"); // Replace with your public key
 
-const doctorID = "doc123"; // Replace with dynamic ID after login
-
-const pregnancyMessages = [
-  "Congratulations on your pregnancy! It's still early, but your baby is beginning to form.",
-  "The first trimester is almost over! Your baby's heart is now beating and growing fast.",
-  "By now, your baby is the size of a peach! Expecting some movements soon.",
-  "Your baby is growing stronger! Their organs are now functioning and they’re becoming more active.",
-  "Halfway there! Your baby can now hear sounds and may even respond to your touch.",
-  "The baby is getting bigger and stronger. They are starting to recognize voices!",
-  "Almost there! Your baby is practicing breathing and moving more vigorously.",
-  "In the final stretch! Your baby is preparing for birth and continues to grow.",
-  "It's time! Get ready for your baby's arrival, your little one is about to make their debut."
-];
+let doctorID = "";
 
 function loadPatients() {
   db.collection("patients")
-    .where("doctorID", "==", doctorID)
-    .get()
-    .then(snapshot => {
-      const ul = document.getElementById("patientList");
-      ul.innerHTML = "";
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        const li = document.createElement("li");
-        li.setAttribute("data-id", doc.id);
-        li.innerHTML = `
-          <strong>${data.name}</strong><br>
-          Email: ${data.email}<br>
-          Month: ${data.pregnancyMonth}<br>
-          Last Email Sent: ${data.lastEmailSent ? new Date(data.lastEmailSent).toLocaleDateString() : "N/A"}
-        `;
-        ul.appendChild(li);
+      .where("doctorId", "==", doctorID)
+      .get()
+      .then(snapshot => {
+          const ul = document.getElementById("patientList");
+          ul.innerHTML = "";
+          snapshot.forEach(doc => {
+              const data = doc.data();
+              const li = document.createElement("li");
+              li.setAttribute("data-id", doc.id);
+              li.innerHTML = `
+                  <strong>${data.fname} ${data.lname}</strong><br>
+                  Email: ${data.email}<br>
+                  Month: ${data.month}<br>
+                  Last Email Sent: ${data.lastEmailSent ? new Date(data.lastEmailSent.toDate()).toLocaleDateString() : "N/A"}
+              `;
+              ul.appendChild(li);
+          });
+      })
+      .catch(error => {
+          alert("Error loading patients: " + error.message);
       });
-    })
-    .catch(error => {
-      alert("Error loading patients: " + error.message);
-    });
 }
 
-function sendEmailToPatient(patient) {
-  const message = pregnancyMessages[patient.pregnancyMonth - 1];
-
-  // Choose template based on pregnancy month
-  let templateID;
-  if (patient.pregnancyMonth >= 1 && patient.pregnancyMonth <= 4) {
-    templateID = "template_xun19bp"; // Replace with your actual template ID
-  } else if (patient.pregnancyMonth >= 5 && patient.pregnancyMonth <= 9) {
-    templateID = "template_panjjcp"; // Replace with your actual template ID
-  } else {
-    alert(`Invalid month (${patient.pregnancyMonth}) for ${patient.name}`);
-    return;
+function sendEmailToPatient(patientData) { // Renamed parameter to clarify it's the document data
+  const monthNum = parseInt(patientData.month);
+  if (isNaN(monthNum) || monthNum < 1 || monthNum > 9) {
+      alert("Invalid pregnancy month for " + patientData.fname);
+      return;
   }
 
+  const templateId = `template_month${monthNum}`; // Ensure this matches your template ID
+
+  // *** IMPORTANT: Adjust these keys to match your EmailJS template variables! ***
   const emailParams = {
-    to_email: patient.email,
-    to_name: patient.name,
-    subject: `Pregnancy Update - Month ${patient.pregnancyMonth}`,
-    message: `Hi ${patient.name},\n\nYou're in month ${patient.pregnancyMonth} of your pregnancy. Here's what to expect:\n\n${message}`
+      to_email: patientData.email, // Using the 'email' field from your Firestore document
+      patient_name: patientData.fname, // Using the 'fname' (first name) field
+      // You can add other patient data here if your EmailJS template uses them,
+      // for example:
+      // husband_name: patientData.husbandName,
+      // pregnancy_month: patientData.month,
+      reply_to: patientData.email // If you want replies to go to the patient's email
   };
 
-  emailjs.send("service_2yyas18", templateID, emailParams) // Replace with your actual service ID
-    .then(() => {
-      db.collection("patients").doc(patient.id).update({
-        lastEmailSent: firebase.firestore.FieldValue.serverTimestamp()
+  emailjs.send("service_2yyas18", templateId, emailParams)
+      .then(() => {
+          db.collection("patients").doc(patientData.id).update({ // Ensure you have the document ID
+              lastEmailSent: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          alert("Email sent to " + patientData.fname);
+      })
+      .catch(error => {
+          alert("Failed to send email to " + patientData.fname + ": " + error.message);
+          console.error(error);
       });
-      alert("Email sent to " + patient.name);
-    })
-    .catch(error => {
-      alert("Failed to send email: " + error.message);
-    });
 }
 
 function sendMonthlyEmails() {
   const patients = document.querySelectorAll("#patientList li");
   patients.forEach(el => {
-    const id = el.getAttribute("data-id");
-    db.collection("patients").doc(id).get()
-      .then(doc => {
-        const data = doc.data();
-        const last = data.lastEmailSent ? new Date(data.lastEmailSent) : null;
-        const now = new Date();
-        if (!last || last.getMonth() !== now.getMonth()) {
-          sendEmailToPatient({ ...data, id });
-        }
-      });
+      const id = el.getAttribute("data-id");
+      db.collection("patients").doc(id).get()
+          .then(doc => {
+              if (doc.exists) {
+                  const data = doc.data();
+                  const last = data.lastEmailSent ? new Date(data.lastEmailSent.toDate()) : null;
+                  const now = new Date();
+                  if (!last || last.getMonth() !== now.getMonth()) {
+                      sendEmailToPatient({ ...data, id: doc.id }); // Pass the document data and ID
+                  }
+              }
+          });
   });
 }
 
 document.getElementById("sendEmailsBtn").addEventListener("click", sendMonthlyEmails);
 
-// Change Password Modal Functions
 function openChangePasswordModal() {
   document.getElementById("changePasswordModal").style.display = "flex";
 }
@@ -119,29 +108,42 @@ function changePassword() {
   const user = auth.currentUser;
 
   if (!newPassword || newPassword.length < 6) {
-    alert("Password must be at least 6 characters.");
-    return;
+      alert("Password must be at least 6 characters.");
+      return;
   }
 
   user.updatePassword(newPassword)
-    .then(() => {
-      alert("Password changed successfully.");
-      closeChangePasswordModal();
-    })
-    .catch(error => {
-      alert("Error changing password: " + error.message);
-    });
+      .then(() => {
+          alert("Password changed successfully.");
+          closeChangePasswordModal();
+      })
+      .catch(error => {
+          alert("Error changing password: " + error.message);
+      });
 }
 
-// Simulated login - implement real auth in production
+// Login logic
 auth.signInWithEmailAndPassword("doctor@example.com", "testpassword")
-  .then(() => loadPatients())
-  .catch(error => console.log("Auth error:", error));
+  .then(userCredential => {
+      const uid = userCredential.user.uid;
+      return db.collection("doctors").doc(uid).get();
+  })
+  .then(doc => {
+      if (doc.exists) {
+          doctorID = doc.data().doctorId;
+          loadPatients();
+      } else {
+          throw new Error("Doctor data not found.");
+      }
+  })
+  .catch(error => {
+      console.error("Auth error:", error);
+  });
 
 function logout() {
   auth.signOut().then(() => {
-    window.location.href = "doctorlogin.html";
+      window.location.href = "doctorlogin.html";
   }).catch(error => {
-    alert("Logout failed: " + error.message);
+      alert("Logout failed: " + error.message);
   });
 }
