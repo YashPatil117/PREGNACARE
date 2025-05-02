@@ -1,47 +1,213 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
   <title>Doctor Dashboard</title>
-  <link rel="stylesheet" href="doctor_dashboard.css">
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
   <script src="https://smtpjs.com/v3/smtp.js"></script>
+  <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+  <style>
+    /* your CSS pasted from earlier */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #121a24;
+      color: #ffffff;
+      display: flex;
+      height: 100vh;
+    }
+    .main-container {
+      display: flex;
+      width: 100%;
+    }
+    .sidebar {
+      width: 240px;
+      background-color: #00796b;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+    .sidebar h2 {
+      color: white;
+      margin-bottom: 30px;
+      font-size: 1.5em;
+    }
+    .sidebar ul {
+      list-style: none;
+    }
+    .sidebar ul li {
+      margin: 10px 0;
+    }
+    .sidebar ul li a {
+      color: #ffffff;
+      text-decoration: none;
+    }
+    .logout {
+      margin-top: auto;
+      background-color: #d32f2f;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .dashboard-content {
+      flex-grow: 1;
+      padding: 40px;
+      background-color: #0f1722;
+    }
+    .dashboard-content h1 {
+      font-size: 1.8em;
+      margin-bottom: 30px;
+      color: #9effcb;
+    }
+    .card {
+      background-color: #000000dd;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      max-width: 600px;
+      margin-bottom: 20px;
+    }
+    .card-body {
+      background-color: #00332f;
+      padding: 10px;
+      border-radius: 5px;
+      color: #b2dfdb;
+    }
+  </style>
 </head>
 <body>
   <div class="main-container">
-    <!-- Sidebar -->
     <div class="sidebar">
-      <div>
-        <h2>Pregnacare</h2>
-        <nav>
-          <p class="section-title">Doctor Panel</p>
-          <ul>
-            <li><a href="#">Dashboard</a></li>
-            <li><a href="#">My Patients</a></li>
-            <li><a href="#">Messages</a></li>
-          </ul>
-        </nav>
-      </div>
-      <button class="logout">Logout</button>
+      <h2>PregnaCare</h2>
+      <ul>
+        <li><a href="#">Dashboard</a></li>
+        <li><a href="#" id="changePasswordBtn">Change Password</a></li>
+      </ul>
+      <button class="logout" id="logoutBtn">Logout</button>
     </div>
-
-    <!-- Dashboard content -->
     <div class="dashboard-content">
-      <h1>Welcome, Dr. Mahesh Mahant</h1>
+      <h1>Welcome Doctor</h1>
 
       <div class="card">
-        <h2>Assigned Patients</h2>
-        <div class="card-body">
-          <ul id="patientList">Loading...</ul>
-          <br>
-          <button id="sendEmailsBtn">Send Monthly Emails</button>
-        </div>
+        <h2>Patients</h2>
+        <ul id="patientList" class="card-body"></ul>
       </div>
+
+      <div class="card">
+        <h2>Change Password</h2>
+        <form id="changePasswordForm">
+          <input type="password" id="oldPassword" placeholder="Old Password" required><br><br>
+          <input type="password" id="newPassword" placeholder="New Password" required><br><br>
+          <button type="submit">Change Password</button>
+        </form>
+      </div>
+
+      <button id="sendEmailsBtn">Send Monthly Emails</button>
     </div>
   </div>
 
-  <script src="doctor_dashboard.js"></script>
+  <script>
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyAAdjeTlV3QD7RNuhJeuIo8Vp2tftjbE1k",
+      authDomain: "pregnacare-70aed.firebaseapp.com",
+      projectId: "pregnacare-70aed",
+      storageBucket: "pregnacare-70aed.appspot.com",
+      messagingSenderId: "375969305451",
+      appId: "1:375969305451:web:82d4e1f90264cfa3f6f22e"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // EmailJS Configuration
+    const service_id = 'service_2yyas18';
+    const user_id = 'user_GIT8geTjaArfMDEOZfzpD';
+    
+    // Pregnancy messages for each month
+    const pregnancyMessages = [
+      "Congratulations on your pregnancy! It's still early, but your baby is beginning to form.",
+      "The first trimester is almost over! Your baby's heart is now beating and growing fast.",
+      "By now, your baby is the size of a peach! Expecting some movements soon.",
+      "Your baby is growing stronger! Their organs are now functioning and they’re becoming more active.",
+      "Halfway there! Your baby can now hear sounds and may even respond to your touch.",
+      "The baby is getting bigger and stronger. They are starting to recognize voices!",
+      "Almost there! Your baby is practicing breathing and moving more vigorously.",
+      "In the final stretch! Your baby is preparing for birth and continues to grow.",
+      "It's time! Get ready for your baby's arrival, your little one is about to make their debut."
+    ];
+
+    firebase.auth().onAuthStateChanged(user => {
+      if (!user) {
+        window.location.href = "doctorlogin.html";
+        return;
+      }
+
+      // Load patients
+      db.collection("women").where("doctorId", "==", "asd1234").get()
+        .then(snapshot => {
+          document.getElementById("patientList").innerHTML = "";
+          snapshot.forEach(doc => {
+            const data = doc.data();
+            const li = document.createElement("li");
+            li.innerHTML = `
+              <strong>${data.fname} ${data.lname}</strong><br>
+              Email: ${data.email}<br>
+              Month: ${data.month}<br>
+              Last Email Sent: ${data.lastEmailSent ? new Date(data.lastEmailSent.seconds * 1000).toLocaleDateString() : "N/A"}
+            `;
+            li.setAttribute("data-id", doc.id);
+            document.getElementById("patientList").appendChild(li);
+          });
+        });
+
+      // Logout
+      document.getElementById("logoutBtn").addEventListener("click", () => {
+        firebase.auth().signOut().then(() => {
+          window.location.href = "doctorlogin.html";
+        });
+      });
+
+      // Send Monthly Emails
+      document.getElementById("sendEmailsBtn").addEventListener("click", () => {
+        const patients = document.querySelectorAll("#patientList li");
+        patients.forEach(li => {
+          const patientID = li.getAttribute("data-id");
+          db.collection("women").doc(patientID).get().then(doc => {
+            const patient = doc.data();
+            const currentDate = new Date();
+            const lastEmailDate = patient.lastEmailSent ? new Date(patient.lastEmailSent.seconds * 1000) : null;
+
+            if (!lastEmailDate || lastEmailDate.getMonth() !== currentDate.getMonth()) {
+              const message = pregnancyMessages[patient.month - 1];
+              const templateKey = patient.month <= 4 ? 'template_xun19bp' : 'template_panjjcp';
+
+              // Send email using EmailJS
+              emailjs.send(service_id, templateKey, {
+                to_name: patient.fname + ' ' + patient.lname,
+                to_email: patient.email,
+                message: message,
+                doctor_name: patient.doctorName,
+                pregnancy_month: patient.month
+              }).then(() => {
+                db.collection("women").doc(patientID).update({
+                  lastEmailSent: firebase.firestore.FieldValue.serverTimestamp()
+                });
+              }).catch(err => {
+                alert("Email error: " + err.message);
+              });
+            }
+          });
+        });
+      });
+    });
+  </script>
 </body>
 </html>
