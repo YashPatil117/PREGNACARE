@@ -12,7 +12,10 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const auth = firebase.auth();
 
-const doctorID = "doc123"; // Replace with dynamic ID on login
+// Initialize EmailJS
+emailjs.init("t3u-O3DqYyw900CBp"); // Replace with your actual EmailJS public key
+
+const doctorID = "doc123"; // Replace with dynamic ID after login
 
 const pregnancyMessages = [
   "Congratulations on your pregnancy! It's still early, but your baby is beginning to form.",
@@ -53,17 +56,26 @@ function loadPatients() {
 
 function sendEmailToPatient(patient) {
   const message = pregnancyMessages[patient.pregnancyMonth - 1];
-  const params = {
-    Host: "smtp.yourprovider.com",
-    Username: "YOUR_EMAIL",
-    Password: "YOUR_PASSWORD",
-    To: patient.email,
-    From: "YOUR_EMAIL",
-    Subject: `Pregnancy Update - Month ${patient.pregnancyMonth}`,
-    Body: `Hi ${patient.name},\n\nYou're in month ${patient.pregnancyMonth} of your pregnancy. Here's what to expect:\n\n${message}`
+
+  // Choose template based on pregnancy month
+  let templateID;
+  if (patient.pregnancyMonth >= 1 && patient.pregnancyMonth <= 4) {
+    templateID = "template_xun19bp"; // Replace with your actual template ID
+  } else if (patient.pregnancyMonth >= 5 && patient.pregnancyMonth <= 9) {
+    templateID = "template_panjjcp"; // Replace with your actual template ID
+  } else {
+    alert(`Invalid month (${patient.pregnancyMonth}) for ${patient.name}`);
+    return;
+  }
+
+  const emailParams = {
+    to_email: patient.email,
+    to_name: patient.name,
+    subject: `Pregnancy Update - Month ${patient.pregnancyMonth}`,
+    message: `Hi ${patient.name},\n\nYou're in month ${patient.pregnancyMonth} of your pregnancy. Here's what to expect:\n\n${message}`
   };
 
-  Email.send(params)
+  emailjs.send("service_2yyas18", templateID, emailParams) // Replace with your actual service ID
     .then(() => {
       db.collection("patients").doc(patient.id).update({
         lastEmailSent: firebase.firestore.FieldValue.serverTimestamp()
@@ -121,15 +133,15 @@ function changePassword() {
     });
 }
 
-// Simulated login - you must implement real auth logic
+// Simulated login - implement real auth in production
 auth.signInWithEmailAndPassword("doctor@example.com", "testpassword")
   .then(() => loadPatients())
   .catch(error => console.log("Auth error:", error));
 
-  function logout() {
-    auth.signOut().then(() => {
-      window.location.href = "doctorlogin.html"; // Redirect to login page
-    }).catch(error => {
-      alert("Logout failed: " + error.message);
-    });
-  }
+function logout() {
+  auth.signOut().then(() => {
+    window.location.href = "doctorlogin.html";
+  }).catch(error => {
+    alert("Logout failed: " + error.message);
+  });
+}
