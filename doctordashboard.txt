@@ -191,7 +191,8 @@
     input[type="password"],
     input[type="text"],
     button,
-    select {
+    select,
+    textarea {
       padding: 0.75rem 1rem;
       margin: 0.5rem 0;
       border-radius: 8px;
@@ -202,7 +203,8 @@
   
     input[type="password"],
     input[type="text"],
-    select {
+    select,
+    textarea {
       width: 100%;
       background-color: white;
       color: var(--dark);
@@ -211,7 +213,8 @@
   
     input[type="password"]:focus,
     input[type="text"]:focus,
-    select:focus {
+    select:focus,
+    textarea:focus {
       outline: none;
       border-color: var(--primary);
       box-shadow: 0 0 0 3px rgba(58, 123, 213, 0.2);
@@ -240,11 +243,61 @@
       transform: translateY(0);
     }
   
-    #changePasswordForm {
+    #changePasswordForm,
+    #reportPregnancyForm {
       display: none;
       animation: fadeIn 0.3s ease-out;
     }
   
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .modal-content {
+      background-color: white;
+      padding: 2rem;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    .close-modal {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--dark);
+    }
+    
+    .form-row {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .form-group {
+      flex: 1;
+    }
+    
     /* Animations */
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
@@ -397,6 +450,22 @@
       border-radius: 6px;
       flex: 1;
     }
+    
+    .btn-secondary {
+      background: var(--secondary);
+    }
+    
+    .btn-secondary:hover {
+      background: #1a252f;
+    }
+    
+    .btn-accent {
+      background: var(--accent);
+    }
+    
+    .btn-accent:hover {
+      background: #c0392b;
+    }
   
     /* Responsive Design */
     @media (max-width: 768px) {
@@ -416,6 +485,11 @@
       #patientList {
         grid-template-columns: 1fr;
       }
+      
+      .form-row {
+        flex-direction: column;
+        gap: 0;
+      }
     }
   </style>
 </head>
@@ -426,6 +500,7 @@
       <ul>
         <li><a href="#">Dashboard</a></li>
         <li><a href="#" id="changePasswordBtn">Change Password</a></li>
+        <li><a href="#" id="reportPregnancyBtn">Report Pregnancy</a></li>
       </ul>
       <button class="logout" id="logoutBtn">Logout</button>
     </div>
@@ -457,6 +532,99 @@
         <div id="loadingIndicator">Checking patients...</div>
         <div id="emailStatus"></div>
       </div>
+    </div>
+  </div>
+  
+  <!-- Report Pregnancy Modal -->
+  <div class="modal" id="reportPregnancyModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Report New Pregnancy</h2>
+        <button class="close-modal" id="closeModal">&times;</button>
+      </div>
+      <form id="reportPregnancyForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="fname">First Name</label>
+            <input type="text" id="fname" required>
+          </div>
+          <div class="form-group">
+            <label for="lname">Last Name</label>
+            <input type="text" id="lname" required>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" required>
+          </div>
+          <div class="form-group">
+            <label for="age">Age</label>
+            <input type="number" id="age" min="18" max="50" required>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="dob">Date of Birth</label>
+            <input type="date" id="dob" required>
+          </div>
+          <div class="form-group">
+            <label for="husbandName">Husband/Partner Name</label>
+            <input type="text" id="husbandName">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="trimester">Trimester</label>
+            <select id="trimester" required>
+              <option value="">Select Trimester</option>
+              <option value="1">First Trimester</option>
+              <option value="2">Second Trimester</option>
+              <option value="3">Third Trimester</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="month">Pregnancy Month</label>
+            <select id="month" required>
+              <option value="">Select Month</option>
+              <option value="1">Month 1</option>
+              <option value="2">Month 2</option>
+              <option value="3">Month 3</option>
+              <option value="4">Month 4</option>
+              <option value="5">Month 5</option>
+              <option value="6">Month 6</option>
+              <option value="7">Month 7</option>
+              <option value="8">Month 8</option>
+              <option value="9">Month 9</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="lastMenstrualCycle">Last Menstrual Cycle Date</label>
+          <input type="date" id="lastMenstrualCycle" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="pregnancyStartDate">Pregnancy Start Date</label>
+          <input type="date" id="pregnancyStartDate" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="address">Address</label>
+          <textarea id="address" rows="2"></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="medicalHistory">Medical History</label>
+          <textarea id="medicalHistory" rows="3" placeholder="Any pre-existing conditions, allergies, etc."></textarea>
+        </div>
+        
+        <button type="submit" class="btn-accent">Register Pregnancy</button>
+      </form>
     </div>
   </div>
 
@@ -496,6 +664,8 @@
         window.location.href = "doctorlogin.html";
         return;
       }
+      
+      const currentDoctorId = user.uid;
 
       function addStatus(message, type = "") {
         const div = document.createElement("div");
@@ -520,7 +690,7 @@
       
       async function loadPatients(searchTerm = "") {
         try {
-          let query = db.collection("women");
+          let query = db.collection("women").where("doctorId", "==", currentDoctorId);
           const list = document.getElementById("patientList");
           
           if (searchTerm) {
@@ -570,11 +740,14 @@
           patientDiv.innerHTML = `
             <strong>${data.fname || 'Unknown'} ${data.lname || ''}</strong><br>
             Email: ${data.email || 'Not provided'}<br>
+            Age: ${data.age || 'Not provided'}<br>
+            Trimester: ${data.trimester || 'Not set'}<br>
             Pregnancy Month: ${data.month || 'Not set'}<br>
             Start Date: ${data.pregnancyStartDate?.toDate?.()?.toLocaleDateString() || 'Not set'}<br>
             Last Email: ${data.lastEmailSent?.toDate?.()?.toLocaleDateString() || 'Never'}
             <div class="patient-actions">
               <button class="send-now-btn" data-id="${doc.id}">Send Email Now</button>
+              <button class="view-details-btn btn-secondary" data-id="${doc.id}">View Details</button>
             </div>
           `;
           list.appendChild(patientDiv);
@@ -585,6 +758,14 @@
           btn.addEventListener('click', async (e) => {
             const patientId = e.target.getAttribute('data-id');
             await sendEmailToPatient(patientId);
+          });
+        });
+        
+        document.querySelectorAll('.view-details-btn').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const patientId = e.target.getAttribute('data-id');
+            // You can implement view details functionality here
+            alert("View details for patient: " + patientId);
           });
         });
       }
@@ -656,6 +837,50 @@
           return false;
         }
       }
+      
+      async function registerPregnancy() {
+        const form = document.getElementById('reportPregnancyForm');
+        const fname = document.getElementById('fname').value.trim();
+        const lname = document.getElementById('lname').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const age = document.getElementById('age').value;
+        const dob = document.getElementById('dob').value;
+        const husbandName = document.getElementById('husbandName').value.trim();
+        const trimester = document.getElementById('trimester').value;
+        const month = document.getElementById('month').value;
+        const lastMenstrualCycle = document.getElementById('lastMenstrualCycle').value;
+        const pregnancyStartDate = document.getElementById('pregnancyStartDate').value;
+        const address = document.getElementById('address').value.trim();
+        const medicalHistory = document.getElementById('medicalHistory').value.trim();
+        
+        try {
+          // Add the patient to Firestore with the current doctor's ID
+          await db.collection('women').add({
+            fname,
+            lname,
+            email,
+            age: parseInt(age),
+            dob,
+            husbandName,
+            trimester,
+            month: parseInt(month),
+            lastMenstrualCycle: new Date(lastMenstrualCycle),
+            pregnancyStartDate: new Date(pregnancyStartDate),
+            address,
+            medicalHistory,
+            doctorId: currentDoctorId,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          
+          alert('Pregnancy registered successfully!');
+          document.getElementById('reportPregnancyModal').style.display = 'none';
+          form.reset();
+          loadPatients(); // Refresh the patient list
+        } catch (error) {
+          console.error('Error registering pregnancy:', error);
+          alert('Error: ' + error.message);
+        }
+      }
 
       // Initial load
       loadPatients();
@@ -668,6 +893,26 @@
       document.getElementById("changePasswordBtn").addEventListener("click", () => {
         document.getElementById("changePasswordForm").style.display = 
           document.getElementById("changePasswordForm").style.display === "block" ? "none" : "block";
+      });
+      
+      document.getElementById("reportPregnancyBtn").addEventListener("click", () => {
+        document.getElementById('reportPregnancyModal').style.display = 'flex';
+      });
+      
+      document.getElementById("closeModal").addEventListener("click", () => {
+        document.getElementById('reportPregnancyModal').style.display = 'none';
+      });
+      
+      // Close modal when clicking outside
+      window.addEventListener('click', (e) => {
+        if (e.target === document.getElementById('reportPregnancyModal')) {
+          document.getElementById('reportPregnancyModal').style.display = 'none';
+        }
+      });
+      
+      document.getElementById("reportPregnancyForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        registerPregnancy();
       });
 
       document.getElementById("searchBtn").addEventListener("click", () => {
@@ -698,7 +943,7 @@
         statusDiv.innerHTML = "<div class='status-message'>Starting email check...</div>";
 
         try {
-          const snapshot = await db.collection("women").get();
+          const snapshot = await db.collection("women").where("doctorId", "==", currentDoctorId).get();
           let emailsSent = 0;
           let emailsSkipped = 0;
 

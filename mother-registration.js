@@ -1,3 +1,8 @@
+import { auth, db } from './firebase-config.js';
+import {
+  setDoc, doc, updateDoc, arrayUnion, getDocs, query, collection, where
+} from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
 document.getElementById('mother-registration-form').addEventListener('submit', async function (e) {
   e.preventDefault();
 
@@ -17,50 +22,48 @@ document.getElementById('mother-registration-form').addEventListener('submit', a
     husbandName: document.getElementById('husbandName').value.trim(),
     trimester: document.getElementById('trimester').value.trim(),
     month: document.getElementById('month').value.trim(),
-    doctorId: document.getElementById('doctorId').value.trim(), // This should be the doctor's UID
+    doctorName: document.getElementById('doctorName').value.trim(),
+    doctorId: document.getElementById('doctorId').value.trim(),
     address: document.getElementById('address').value.trim(),
-    medicalHistory: document.getElementById('medicalHistory').value.trim(),
-    lastMenstrualCycle: document.getElementById('lastMenstrualCycle').value,
-    pregnancyStartDate: document.getElementById('pregnancyStartDate').value
+    medicalHistory: document.getElementById('medicalHistory').value.trim()
   };
 
   try {
-    // Store mother data with doctorId reference
+    // ✅ Store mother data regardless of doctor validity
     await setDoc(doc(db, "women", uid), {
       ...formData,
       email: user.email || "",
       role: "mother",
-      registrationDate: new Date(),
-      createdAt: new Date(),
-      lastEmailSent: null,
-      doctorId: formData.doctorId // This links the patient to the doctor
+      registrationDate: new Date(), // for monthly emails
+      createdAt: new Date()
     });
 
-    // Verify doctor exists and update their patients list
-    const doctorRef = doc(db, "doctors", formData.doctorId);
-    const doctorSnap = await getDoc(doctorRef);
+    // ✅ Search for doctor document with matching doctorId field
+    const q = query(collection(db, "doctors"), where("doctorId", "==", formData.doctorId));
+    const querySnapshot = await getDocs(q);
 
-    if (doctorSnap.exists()) {
+    if (!querySnapshot.empty) {
+      const docSnap = querySnapshot.docs[0];
+      const doctorRef = doc(db, "doctors", docSnap.id);
+
       await updateDoc(doctorRef, {
         patients: arrayUnion({
           motherId: uid,
           name: `${formData.fname} ${formData.lname}`,
           email: user.email || "",
           trimester: formData.trimester,
-          month: formData.month,
-          joinedDate: new Date()
+          month: formData.month
         })
       });
+
       alert("Registration successful and linked with doctor.");
     } else {
       alert("Doctor ID not found. Patient registered, but doctor not linked.");
     }
 
     console.log("Mother registration completed.");
-    // Redirect or show success message
-    window.location.href = "mother-dashboard.html";
   } catch (error) {
     console.error("Error during registration:", error);
-    alert("An error occurred during registration: " + error.message);
+    alert("An error occurred during registration. See console for details.");
   }
 });
