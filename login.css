@@ -1,118 +1,195 @@
-/* login-style.css */
-
-/* General body style */
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: #f4f6f9;
+/* General Styles */
+:root {
+  --primary-color: #6a5acd; /* Soft purple - common in healthcare */
+  --secondary-color: #4ac6d7; /* Teal accent */
+  --light-color: #f8f9fa;
+  --dark-color: #343a40;
+  --success-color: #28a745;
+  --error-color: #dc3545;
+  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s ease;
 }
 
-/* Top Section (Header + Background Wave) */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: #f5f7fa;
+  color: var(--dark-color);
+  line-height: 1.6;
+}
+
+/* Header Section */
 .top-section {
+  background: linear-gradient(135deg, var(--primary-color), #8a7fd9);
+  color: white;
+  padding: 1rem 0;
   position: relative;
-  background-color: #3498db;
-  padding: 20px 0;
+  overflow: hidden;
 }
 
 .header-container {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
-  text-align: center;
-  color: white;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  position: relative;
+  z-index: 2;
 }
 
 .header-container h1 {
-  font-size: 3rem;
-  margin: 10px 0;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  text-align: center;
 }
 
 .logo {
-  width: 100px;
-  height: auto;
-  margin-top: 10px;
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  margin-bottom: 1rem;
 }
 
 .wave-background {
   position: absolute;
-  bottom: -10px;
+  bottom: 0;
   left: 0;
   width: 100%;
-  height: 80px;
-  background-image: url('https://www.transparenttextures.com/patterns/diagonal-stripes-light.png');
-  background-size: 100%;
+  height: 100px;
+  background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" fill="%23f5f7fa" opacity=".25"/><path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" fill="%23f5f7fa" opacity=".5"/><path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z" fill="%23f5f7fa"/></svg>');
+  background-size: cover;
+  z-index: 1;
 }
 
-/* Main Content Area */
+/* Main Content */
 .main-content {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: calc(100vh - 120px);
+  min-height: calc(100vh - 250px);
+  padding: 2rem;
 }
 
 .form-section {
-  background-color: #ffffff;
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  max-width: 400px;
   width: 100%;
+  max-width: 500px;
+}
+
+.form-container {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: var(--box-shadow);
+  transform: translateY(-50px);
+  z-index: 10;
+  position: relative;
+  margin: 0 auto;
 }
 
 .form-container h2 {
+  color: var(--primary-color);
+  margin-bottom: 1.5rem;
   text-align: center;
-  margin-bottom: 20px;
+  font-size: 2rem;
 }
 
+/* Form Styles */
 form {
   display: flex;
   flex-direction: column;
+  gap: 1.25rem;
 }
 
-form label {
-  margin-bottom: 8px;
-  font-weight: bold;
+label {
+  font-weight: 600;
+  color: var(--dark-color);
+  margin-bottom: -0.75rem;
 }
 
-form input[type="email"] {
-  padding: 10px;
-  margin-bottom: 15px;
+input {
+  padding: 0.75rem 1rem;
   border: 1px solid #ddd;
-  border-radius: 5px;
-  font-size: 16px;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: var(--transition);
 }
 
-form button {
-  background-color: #3498db;
+input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(106, 90, 205, 0.2);
+}
+
+button {
+  background-color: var(--primary-color);
   color: white;
-  padding: 12px;
   border: none;
-  border-radius: 5px;
-  font-size: 16px;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
+  transition: var(--transition);
+  margin-top: 0.5rem;
 }
 
-form button:hover {
-  background-color: #2980b9;
+button:hover {
+  background-color: #5a4acf;
+  transform: translateY(-2px);
 }
 
+button:active {
+  transform: translateY(0);
+}
+
+/* Register Link */
 .register-redirect {
   text-align: center;
-  margin-top: 20px;
-}
-
-.register-redirect p {
-  font-size: 14px;
+  margin-top: 1.5rem;
+  color: #666;
 }
 
 .register-redirect a {
-  color: #3498db;
+  color: var(--primary-color);
   text-decoration: none;
+  font-weight: 600;
+  transition: var(--transition);
 }
 
 .register-redirect a:hover {
+  color: #5a4acf;
   text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .header-container h1 {
+    font-size: 2rem;
+  }
+  
+  .form-container {
+    padding: 2rem 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-container h1 {
+    font-size: 1.75rem;
+  }
+  
+  .form-container {
+    padding: 1.5rem 1rem;
+  }
+  
+  input, button {
+    padding: 0.65rem 0.75rem;
+  }
 }
