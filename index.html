@@ -3,44 +3,87 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Welcome to PREGNACARE</title>
+  <title>Welcome to PREGNACARE - Maternal Care Redefined</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap">
   <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="pregnacare-favicon.png" type="image/png">
 </head>
 <body>
   <!-- Welcome Section -->
   <div class="welcome-section">
-    <!-- <div class="welcome-text">
-      <h1>Welcome to PREGNACARE</h1>
-      <p>Your trusted partner in maternal care.</p>
-    </div> -->
-    <!-- Blue Section (Doctor Image) --> 
-     
-    <div class="left-side">
-      <img src="doctor image.jpg" alt="Doctor Image" class="side-image doctor">
+    <!-- Left Side - Doctor Image -->
+    <div class="side-section left-side">
+      <div class="image-container">
+        <img src="doctor image.jpg" alt="Caring Doctor" class="side-image doctor">
+        <div class="image-overlay">
+          <h3>For Healthcare Professionals</h3>
+          <p>Advanced tools for maternal care management</p>
+        </div>
+      </div>
     </div>
 
-    <!-- Logo and Slogan in the Center -->
+    <!-- Center Content -->
     <div class="center-section">
       <div class="logo-container">
         <img src="pregnacare.png" alt="PregnaCare Logo" class="logo">
+        <div class="pulse-effect"></div>
       </div>
-      <h2 class="slogan">Because Every Mother Deserves to Be Cared For.</h2>
+      
+      <h1 class="main-heading">PREGNACARE</h1>
+      <h2 class="slogan">Because Every Mother Deserves Exceptional Care</h2>
+      
       <div class="button-container">
-        <a href="doctor-registration.html">
-          <button class="register-button doctor-btn">Doctor Registration</button>
+        <a href="doctor-registration.html" class="btn-link">
+          <button class="register-button doctor-btn">
+            <span class="btn-icon">👩‍⚕️</span>
+            <span class="btn-text">Doctor Portal</span>
+            <span class="btn-arrow">→</span>
+          </button>
         </a>
-        <a href="patient-registration.html">
-          <button class="register-button patient-btn">Patient Registration</button>
+        <a href="patient-registration.html" class="btn-link">
+          <button class="register-button patient-btn">
+            <span class="btn-icon">🤰</span>
+            <span class="btn-text">Patient Portal</span>
+            <span class="btn-arrow">→</span>
+          </button>
         </a>
+      </div>
+      
+      <div class="stats-container">
+        <div class="stat-item">
+          <div class="stat-number" id="doctors-count"></div>
+          <div class="stat-label">Trusted Doctors</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" id="mothers-count"></div>
+          <div class="stat-label">Happy Mothers</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" id="success-rate"></div>
+          <div class="stat-label"></div>
+        </div>
       </div>
     </div>
 
-    <!-- White Section (Mother Image) -->
-    <div class="right-side">
-      <img src="mother pic.jpg" alt="Mother Image" class="side-image mother">
+    <!-- Right Side - Mother Image -->
+    <div class="side-section right-side">
+      <div class="image-container">
+        <img src="mother pic.jpg" alt="Happy Expectant Mother" class="side-image mother">
+        <div class="image-overlay">
+          <h3>For Expectant Mothers</h3>
+          <p>Personalized care throughout your pregnancy journey</p>
+        </div>
+      </div>
     </div>
   </div>
 
-  <script type = "module" src="index.js"></script>
+  <!-- Floating Elements -->
+  <div class="floating-elements">
+    <div class="floating-circle circle-1"></div>
+    <div class="floating-circle circle-2"></div>
+    <div class="floating-circle circle-3"></div>
+  </div>
+
+  <script type="module" src="index.js"></script>
 </body>
 </html>

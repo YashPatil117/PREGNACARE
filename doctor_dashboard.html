@@ -8,145 +8,414 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3.2.0/dist/email.min.js"></script>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #121a24;
-      color: #ffffff;
-      display: flex;
-      height: 100vh;
+    :root {
+      --primary: #3a7bd5;
+      --primary-dark: #00d2ff;
+      --secondary: #2c3e50;
+      --accent: #e74c3c;
+      --light: #ecf0f1;
+      --dark: #2c3e50;
+      --success: #2ecc71;
+      --warning: #f39c12;
+      --danger: #e74c3c;
+      --card-bg: rgba(255, 255, 255, 0.05);
+      --sidebar-bg: linear-gradient(135deg, #3a7bd5 0%, #00d2ff 100%);
     }
-    .main-container { display: flex; width: 100%; }
+  
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', 'Segoe UI', sans-serif;
+    }
+  
+    body {
+      background-color: #f5f7fa;
+      color: #333;
+      display: flex;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+  
+    .main-container {
+      display: flex;
+      width: 100%;
+    }
+  
+    /* Sidebar Styles */
     .sidebar {
-      width: 240px;
-      background-color: #00796b;
-      padding: 20px;
+      width: 280px;
+      background: var(--sidebar-bg);
+      padding: 2rem 1.5rem;
       display: flex;
       flex-direction: column;
+      color: white;
+      box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+      z-index: 10;
     }
-    .sidebar h2 { color: white; margin-bottom: 30px; font-size: 1.5em; }
-    .sidebar ul { list-style: none; }
-    .sidebar ul li { margin: 10px 0; }
-    .sidebar ul li a { 
-      color: #ffffff; 
+  
+    .sidebar h2 {
+      color: white;
+      margin-bottom: 2.5rem;
+      font-size: 1.5rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+  
+    .sidebar h2::before {
+      content: "👩‍⚕️";
+    }
+  
+    .sidebar ul {
+      list-style: none;
+    }
+  
+    .sidebar ul li {
+      margin: 0.75rem 0;
+      transition: transform 0.2s;
+    }
+  
+    .sidebar ul li:hover {
+      transform: translateX(5px);
+    }
+  
+    .sidebar ul li a {
+      color: white;
       text-decoration: none;
-      display: block;
-      padding: 8px;
-      border-radius: 4px;
-      transition: background-color 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      font-weight: 500;
     }
+  
     .sidebar ul li a:hover {
-      background-color: #00695c;
+      background: rgba(255, 255, 255, 0.15);
     }
+  
+    .sidebar ul li a::before {
+      content: "→";
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+  
+    .sidebar ul li a:hover::before {
+      opacity: 1;
+    }
+  
     .logout {
       margin-top: auto;
-      background-color: #d32f2f;
+      background-color: var(--accent);
       color: white;
       border: none;
-      padding: 12px;
-      border-radius: 5px;
+      padding: 0.75rem;
+      border-radius: 8px;
       cursor: pointer;
-      transition: background-color 0.3s;
+      transition: all 0.3s;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
     }
+  
     .logout:hover {
-      background-color: #b71c1c;
+      background-color: #c0392b;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
+  
+    /* Main Content Styles */
     .dashboard-content {
       flex-grow: 1;
-      padding: 40px;
-      background-color: #0f1722;
+      padding: 2.5rem;
+      background-color: #f5f7fa;
       overflow-y: auto;
     }
+  
     .dashboard-content h1 {
-      font-size: 1.8em;
-      margin-bottom: 30px;
-      color: #9effcb;
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      color: var(--dark);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
     }
+  
+    .dashboard-content h1::before {
+      content: "👋";
+    }
+  
+    /* Card Styles */
     .card {
-      background-color: #000000dd;
-      border-radius: 10px;
-      padding: 20px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-      max-width: 800px;
-      margin-bottom: 20px;
+      background: white;
+      border-radius: 12px;
+      padding: 1.75rem;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+      margin-bottom: 2rem;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      transition: transform 0.3s, box-shadow 0.3s;
     }
+  
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+  
+    .card h2 {
+      font-size: 1.4rem;
+      margin-bottom: 1.25rem;
+      color: var(--dark);
+      font-weight: 600;
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+  
     .card-body {
-      background-color: #00332f;
-      padding: 15px;
-      border-radius: 5px;
-      color: #b2dfdb;
+      background: rgba(58, 123, 213, 0.05);
+      padding: 1.25rem;
+      border-radius: 8px;
+      color: var(--dark);
+      border: 1px solid rgba(0, 0, 0, 0.05);
     }
-    input[type="password"], input[type="text"], button {
-      padding: 10px;
-      margin: 5px 0;
-      border-radius: 5px;
-      border: 1px solid #00796b;
+  
+    /* Form Elements */
+    input[type="password"],
+    input[type="text"],
+    button,
+    select {
+      padding: 0.75rem 1rem;
+      margin: 0.5rem 0;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      font-size: 0.95rem;
+      transition: all 0.3s;
     }
-    input[type="password"], input[type="text"] {
+  
+    input[type="password"],
+    input[type="text"],
+    select {
       width: 100%;
-      background-color: #0f1722;
-      color: white;
-      border: 1px solid #00796b;
+      background-color: white;
+      color: var(--dark);
+      border: 1px solid #ddd;
     }
+  
+    input[type="password"]:focus,
+    input[type="text"]:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(58, 123, 213, 0.2);
+    }
+  
     button {
-      background-color: #00796b;
+      background: var(--primary);
       color: white;
       border: none;
       cursor: pointer;
-      transition: background-color 0.3s;
+      transition: all 0.3s;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
     }
+  
     button:hover {
-      background-color: #00695c;
+      background: #2c6bc5;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
-    #changePasswordForm { display: none; }
+  
+    button:active {
+      transform: translateY(0);
+    }
+  
+    #changePasswordForm {
+      display: none;
+      animation: fadeIn 0.3s ease-out;
+    }
+  
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  
+    /* Loading Indicator */
     #loadingIndicator {
       display: none;
-      margin: 20px 0;
-      color: #9effcb;
+      margin: 1.5rem 0;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
     }
+  
+    #loadingIndicator::before {
+      content: "";
+      display: inline-block;
+      width: 1.25rem;
+      height: 1.25rem;
+      border: 3px solid rgba(58, 123, 213, 0.2);
+      border-radius: 50%;
+      border-top-color: var(--primary);
+      animation: spin 1s ease-in-out infinite;
+    }
+  
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  
+    /* Status Messages */
     .status-message {
-      padding: 10px;
-      margin: 5px 0;
-      border-radius: 5px;
+      padding: 0.75rem 1rem;
+      margin: 0.5rem 0;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
-    .success { background-color: #2e7d32; }
-    .error { background-color: #c62828; }
-    .skipped { background-color: #FFC107; color: #000; }
+  
+    .status-message::before {
+      font-size: 1.1rem;
+    }
+  
+    .success {
+      background-color: rgba(46, 204, 113, 0.15);
+      color: var(--success);
+      border-left: 4px solid var(--success);
+    }
+  
+    .success::before {
+      content: "✓";
+    }
+  
+    .error {
+      background-color: rgba(231, 76, 60, 0.15);
+      color: var(--danger);
+      border-left: 4px solid var(--danger);
+    }
+  
+    .error::before {
+      content: "✗";
+    }
+  
+    .skipped {
+      background-color: rgba(243, 156, 18, 0.15);
+      color: var(--warning);
+      border-left: 4px solid var(--warning);
+    }
+  
+    .skipped::before {
+      content: "⚠";
+    }
+  
     #emailStatus {
       max-height: 300px;
       overflow-y: auto;
-      margin-top: 20px;
-      background: #1a1a1a;
-      padding: 10px;
-      border-radius: 5px;
+      margin-top: 1.5rem;
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
     }
+  
+    /* Patient List Styles */
     .patient-form {
       display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
     }
+  
     .patient-form input {
-      padding: 10px;
+      padding: 0.75rem 1rem;
       flex-grow: 1;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      transition: all 0.3s;
     }
-    #patientList li {
-      padding: 10px;
-      margin-bottom: 10px;
-      background-color: #002a26;
-      border-radius: 5px;
-      transition: background-color 0.3s;
+  
+    .patient-form input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(58, 123, 213, 0.2);
     }
-    #patientList li:hover {
-      background-color: #004d40;
+  
+    #patientList {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1rem;
     }
+  
+    .patient-item {
+      padding: 1.25rem;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+  
+    .patient-item:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+  
+    .patient-item strong {
+      font-size: 1.1rem;
+      color: var(--dark);
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+  
+    .patient-item .patient-info {
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 0.25rem;
+    }
+  
     .patient-actions {
-      margin-top: 8px;
+      margin-top: 1rem;
       display: flex;
-      gap: 8px;
+      gap: 0.5rem;
     }
+  
     .patient-actions button {
-      padding: 5px 10px;
-      font-size: 0.8em;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      border-radius: 6px;
+      flex: 1;
+    }
+  
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .main-container {
+        flex-direction: column;
+      }
+  
+      .sidebar {
+        width: 100%;
+        padding: 1.5rem 1rem;
+      }
+  
+      .dashboard-content {
+        padding: 1.5rem;
+      }
+  
+      #patientList {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>

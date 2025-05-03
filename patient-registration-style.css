@@ -1,28 +1,71 @@
-/* General Styles */
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: #f1f1f1;
-  overflow-x: hidden;
+/* ===== Google Font Import ===== */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap');
+
+/* ===== Variables ===== */
+:root {
+  --primary: #5d69b3;
+  --primary-light: #7986cb;
+  --primary-dark: #3f51b5;
+  --secondary: #4db6ac;
+  --accent: #ff7043;
+  --light: #f5f5f5;
+  --dark: #263238;
+  --white: #ffffff;
+  --gray: #90a4ae;
+  --shadow-sm: 0 2px 5px rgba(0,0,0,0.1);
+  --shadow-md: 0 4px 10px rgba(0,0,0,0.15);
+  --shadow-lg: 0 8px 20px rgba(0,0,0,0.2);
+  --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
 }
 
+/* ===== Base Styles ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--light);
+  color: var(--dark);
+  line-height: 1.6;
+}
+
+/* ===== Top Section ===== */
 .top-section {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: var(--white);
+  padding: 1.5rem 0;
   position: relative;
-  background: linear-gradient(135deg, #6b8e23, #87cefa);
-  color: white;
-  padding: 30px;
-  text-align: center;
+  overflow: hidden;
+}
+
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  z-index: 2;
 }
 
 .header-container h1 {
-  font-size: 36px;
-  margin: 0;
+  font-family: 'Playfair Display', serif;
+  font-size: 2.2rem;
+  font-weight: 600;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .logo {
-  width: 100px;
-  height: auto;
+  height: 70px;
+  width: auto;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
 .wave-background {
@@ -30,88 +73,246 @@ body {
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 150px;
-  background: url('wave.svg') no-repeat center center;
+  height: 100px;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.1)" d="M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,250.7C672,235,768,181,864,181.3C960,181,1056,235,1152,234.7C1248,235,1344,181,1392,154.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
   background-size: cover;
-  animation: wave-animation 3s ease-in-out infinite;
+  background-repeat: no-repeat;
+  z-index: 1;
 }
 
+/* ===== Main Content ===== */
 .main-content {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 2rem;
   display: flex;
-  justify-content: space-between; /* Align form to left and image to right */
-  padding: 40px;
+  gap: 3rem;
 }
 
 .form-section {
-  width: 40%; /* Adjust width as needed */
-  padding: 20px;
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.form-container h2 {
-  font-size: 28px;
-  color: #333;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-}
-
-form label {
-  margin: 10px 0 5px;
-  font-size: 16px;
-}
-
-form input,
-form textarea {
-  padding: 10px;
-  font-size: 16px;
-  margin-bottom: 20px;
-  border-radius: 4px;
-  border: 1px solid #ddd;
-}
-
-form button {
-  padding: 10px 20px;
-  background-color: #6b8e23;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 18px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-form button:hover {
-  background-color: #556b2f;
+  flex: 1;
 }
 
 .image-section {
-  width: 50%; /* Adjust image width */
+  flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.pregnant-image {
-  width: 100%; /* Ensures the image fills the container */
-  max-width: 500px; /* Adjust as needed for image size */
-  border-radius: 8px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+/* ===== Form Styles ===== */
+.form-container {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem;
+  box-shadow: var(--shadow-md);
+  transition: var(--transition);
 }
 
-/* Wavy Animation */
-@keyframes wave-animation {
-  0% {
-    transform: translateX(0);
+.form-container:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.form-container h2 {
+  color: var(--primary);
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+  text-align: center;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+.form-container h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background: var(--primary);
+  border-radius: 3px;
+}
+
+#patient-registration-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+label {
+  font-weight: 500;
+  color: var(--dark);
+  margin-bottom: -0.8rem;
+  font-size: 0.95rem;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid var(--light);
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  transition: var(--transition);
+  background-color: var(--light);
+}
+
+input:focus, textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(93, 105, 179, 0.2);
+  background-color: var(--white);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--gray);
+  opacity: 0.7;
+}
+
+textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+button[type="submit"] {
+  background: var(--primary);
+  color: var(--white);
+  border: none;
+  padding: 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+button[type="submit"]:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+button[type="submit"]:active {
+  transform: translateY(0);
+}
+
+/* ===== Image Section ===== */
+.pregnant-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  transition: var(--transition);
+}
+
+.pregnant-image:hover {
+  transform: scale(1.02);
+}
+
+/* ===== Login Redirect ===== */
+.login-redirect {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: var(--gray);
+  font-size: 0.95rem;
+}
+
+.login-redirect a {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.login-redirect a:hover {
+  color: var(--primary-dark);
+  text-decoration: underline;
+}
+
+/* ===== Form Validation ===== */
+input:invalid, textarea:invalid {
+  border-color: var(--accent);
+}
+
+input:valid:not(:placeholder-shown), textarea:valid:not(:placeholder-shown) {
+  border-color: var(--secondary);
+}
+
+/* ===== Responsive Design ===== */
+@media (max-width: 992px) {
+  .main-content {
+    flex-direction: column;
+  }
+  
+  .image-section {
+    order: -1;
+    margin-bottom: 2rem;
+  }
+  
+  .form-container {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-container {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .header-container h1 {
+    font-size: 1.8rem;
+  }
+  
+  .logo {
+    height: 50px;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-content {
+    padding: 0 1rem;
+  }
+  
+  .form-container h2 {
+    font-size: 1.5rem;
+  }
+  
+  input, textarea, button {
+    padding: 0.8rem;
+  }
+}
+
+/* ===== Animations ===== */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
   }
   50% {
-    transform: translateX(-50px);
+    transform: translateY(-10px);
   }
-  100% {
-    transform: translateX(0);
+}
+
+/* ===== Loading State ===== */
+.loading {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+  margin-right: 10px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }

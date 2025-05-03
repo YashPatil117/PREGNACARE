@@ -4,7 +4,397 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Mother's Dashboard</title>
-  <link rel="stylesheet" href="dashboard.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --primary-light: #818cf8;
+      --secondary: #10b981;
+      --accent: #f59e0b;
+      --danger: #ef4444;
+      --dark: #0f172a;
+      --darker: #0f1117;
+      --light: #f8fafc;
+      --gray: #94a3b8;
+      --card-bg: #1e293b;
+      --sidebar-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background-color: var(--darker);
+      color: var(--light);
+      line-height: 1.6;
+    }
+
+    .container {
+      display: flex;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* [Previous CSS styles remain exactly the same...] */
+    /* ... All your existing CSS code ... */
+
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --primary-light: #818cf8;
+      --secondary: #10b981;
+      --accent: #f59e0b;
+      --danger: #ef4444;
+      --dark: #0f172a;
+      --darker: #0f1117;
+      --light: #f8fafc;
+      --gray: #94a3b8;
+      --card-bg: #1e293b;
+      --sidebar-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background-color: var(--darker);
+      color: var(--light);
+      line-height: 1.6;
+    }
+
+    .container {
+      display: flex;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Sidebar - Modern Glass Morphism */
+    .sidebar {
+      background: var(--sidebar-gradient);
+      width: 280px;
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 0 30px rgba(79, 70, 229, 0.3);
+      position: relative;
+      z-index: 10;
+    }
+
+    .sidebar::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      z-index: -1;
+    }
+
+    .profile-pic {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      border: 3px solid rgba(255, 255, 255, 0.2);
+      object-fit: cover;
+      margin-bottom: 1rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .profile-pic:hover {
+      transform: scale(1.05);
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .sidebar h2 {
+      color: white;
+      font-weight: 600;
+      margin-bottom: 3rem;
+      font-size: 1.5rem;
+      text-align: center;
+      position: relative;
+    }
+
+    .sidebar h2::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 3px;
+    }
+
+    .sidebar nav {
+      width: 100%;
+      margin-top: 1rem;
+    }
+
+    .sidebar nav a {
+      color: rgba(255, 255, 255, 0.9);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1.25rem;
+      margin: 0.5rem 0;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .sidebar nav a:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      transform: translateX(5px);
+    }
+
+    .sidebar nav a.active {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      font-weight: 600;
+    }
+
+    .sidebar nav a::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background: white;
+      border-radius: 50%;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .sidebar nav a:hover::before,
+    .sidebar nav a.active::before {
+      opacity: 1;
+    }
+
+    /* Main Content Area */
+    .main-content {
+      flex: 1;
+      padding: 2rem;
+      overflow-y: auto;
+      background-color: var(--darker);
+      position: relative;
+    }
+
+    .main-content::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 240px;
+      background: var(--sidebar-gradient);
+      z-index: -1;
+      opacity: 0.1;
+    }
+
+    /* Top Bar - Floating Action Buttons */
+    .top-bar {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      padding: 1rem 0;
+      margin-bottom: 2rem;
+    }
+
+    button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border: none;
+      font-size: 0.9rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    /* Report Pregnancy Button */
+    #reportPregnancyBtn {
+      background-color: var(--accent);
+      color: #1e293b;
+    }
+
+    #reportPregnancyBtn:hover {
+      background-color: #eab308;
+    }
+
+    /* Chat Button */
+    #chatBtn {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    #chatBtn:hover {
+      background-color: var(--primary-dark);
+    }
+
+    /* Sections - Glass Cards */
+    section {
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(10px);
+      padding: 1.75rem;
+      margin-bottom: 1.5rem;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    section:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+    }
+
+    section h2 {
+      color: var(--light);
+      margin-bottom: 1.25rem;
+      font-size: 1.5rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    section h2::before {
+      content: '';
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--primary);
+    }
+
+    section p {
+      margin-bottom: 0.75rem;
+      color: var(--gray);
+    }
+
+    section p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Messages */
+    .message {
+      background: rgba(15, 23, 42, 0.5);
+      padding: 1rem;
+      margin-top: 1rem;
+      border-radius: 12px;
+      border-left: 4px solid var(--primary);
+      transition: all 0.3s ease;
+    }
+
+    .message:hover {
+      background: rgba(15, 23, 42, 0.7);
+    }
+
+    .message-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--primary-light);
+    }
+
+    .message-content {
+      color: var(--gray);
+    }
+
+    /* Due Date Highlight */
+    #due-date {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* Logout Link */
+    #logout {
+      margin-top: 2rem;
+      color: var(--danger);
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    #logout:hover {
+      background: rgba(239, 68, 68, 0.2);
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.5s ease-out forwards;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        padding: 1.5rem;
+      }
+
+      .main-content {
+        padding: 1.5rem;
+      }
+
+      .top-bar {
+        justify-content: center;
+      }
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--primary-dark);
+    }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -12,7 +402,7 @@
       <img src="profile.jpg" alt="Profile Picture" class="profile-pic"/>
       <h2>Welcome, Mother</h2>
       <nav>
-        <a href="#">Dashboard</a>
+        <a href="#" class="active">Dashboard</a>
         <a href="#">Inbox</a>
         <a href="#">Appointments</a>
         <a href="#">Pregnancy Progress</a>
@@ -24,34 +414,109 @@
 
     <main class="main-content">
       <div class="top-bar">
-        <button id="reportPregnancyBtn" class="top-btn">Report Pregnancy</button>
-        <button id="chatBtn" class="top-btn">Chat with Doctor</button>
+        <button id="reportPregnancyBtn" class="top-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v20M2 12h20"/>
+          </svg>
+          Report Pregnancy
+        </button>
+        <button id="chatBtn" class="top-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+          Chat with Doctor
+        </button>
       </div>
 
-      <section id="inbox">
-        <h2>Your Inbox</h2>
-        <!-- Messages will be inserted here dynamically -->
+      <section id="inbox" class="fade-in">
+        <h2>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+          Your Inbox
+        </h2>
+        <div class="message">
+          <div class="message-header">
+            <span>From: Dr. Smith</span>
+            <span>May 10, 2025</span>
+          </div>
+          <div class="message-content">
+            Your recent test results look great! Everything is progressing normally.
+          </div>
+        </div>
+        <div class="message">
+          <div class="message-header">
+            <span>From: Nutritionist</span>
+            <span>May 8, 2025</span>
+          </div>
+          <div class="message-content">
+            Here's your customized meal plan for the next trimester.
+          </div>
+        </div>
       </section>
 
-      <section id="pregnancyProgress">
-        <h2>Pregnancy Progress</h2>
-        <p>Your estimated due date is: <span id="due-date">Loading...</span></p>
-        <p>Weeks pregnant: 22 weeks</p>
+      <section id="pregnancyProgress" class="fade-in">
+        <h2>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+          Pregnancy Progress
+        </h2>
+        <p>Your estimated due date is: <span id="due-date">September 15, 2025</span></p>
+        <p>Weeks pregnant: <strong>22 weeks</strong></p>
         <p>Baby's growth: The baby is the size of a grapefruit.</p>
+        <p>Next milestone: Your glucose screening test is coming up soon.</p>
       </section>
 
-      <section id="healthTracker">
-        <h2>Health Tracker</h2>
-        <p>Weight: 65 kg</p>
-        <p>Blood Pressure: 120/80 mmHg</p>
-        <p>Next appointment: May 20, 2025</p>
+      <section id="healthTracker" class="fade-in">
+        <h2>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+          </svg>
+          Health Tracker
+        </h2>
+        <p>Weight: <strong>65 kg</strong> (+2 kg from last month)</p>
+        <p>Blood Pressure: <strong>120/80 mmHg</strong> (normal)</p>
+        <p>Last checkup: May 5, 2025 - All normal</p>
+        <p>Next appointment: <strong>May 20, 2025</strong> with Dr. Smith</p>
       </section>
     </main>
   </div>
 
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+  
+  <!-- Your dashboard JavaScript file -->
   <script src="dashboard.js"></script>
+  
+  <!-- Fallback basic functionality -->
+  <script>
+    // This is just fallback basic functionality
+    // Your main logic should be in dashboard.js
+    document.addEventListener('DOMContentLoaded', function() {
+      // If dashboard.js fails to load, this basic functionality will work
+      if (typeof firebase === 'undefined') {
+        console.error('Firebase SDK not loaded');
+        document.getElementById('logout').addEventListener('click', function(e) {
+          e.preventDefault();
+          alert('Firebase not loaded - simulated logout\nRedirecting to login...');
+          window.location.href = 'login.html';
+        });
+      }
+
+      // Basic button functionality
+      document.getElementById('reportPregnancyBtn')?.addEventListener('click', function() {
+        alert('Pregnancy reporting feature would open here');
+      });
+
+      document.getElementById('chatBtn')?.addEventListener('click', function() {
+        alert('Chat with doctor feature would open here');
+      });
+    });
+  </script>
 </body>
 </html>

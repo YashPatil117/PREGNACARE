@@ -1,4 +1,29 @@
-/* Reset and base styles */
+/* ===== Google Font Import ===== */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* ===== Variables ===== */
+:root {
+  --primary: #3b82f6;
+  --primary-light: #60a5fa;
+  --primary-dark: #2563eb;
+  --secondary: #10b981;
+  --accent: #f59e0b;
+  --danger: #ef4444;
+  --light: #f8fafc;
+  --dark: #1e293b;
+  --gray: #94a3b8;
+  --light-gray: #e2e8f0;
+  --card-bg: #ffffff;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s ease;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+}
+
+/* ===== Base Styles ===== */
 * {
   margin: 0;
   padding: 0;
@@ -6,145 +31,354 @@
 }
 
 body {
-  font-family: 'Arial', sans-serif;
-  background: linear-gradient(135deg, #b2ebf2, #80deea);
-  height: 100vh;
+  font-family: 'Poppins', sans-serif;
+  background-color: #f1f5f9;
+  color: var(--dark);
+  line-height: 1.6;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 20px;
 }
 
-/* Main container */
 .main-container {
   display: flex;
+  max-width: 1200px;
+  width: 100%;
   background: white;
-  border-radius: 16px;
-  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
   overflow: hidden;
-  max-width: 900px;
+  min-height: 80vh;
+}
+
+/* ===== Form Container ===== */
+.container {
+  flex: 1;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.container h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 1.5rem;
+  text-align: center;
+  position: relative;
+}
+
+.container h2::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 4px;
+  background: var(--primary);
+  border-radius: 2px;
+}
+
+#doctorLoginForm, #pregnancyForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid var(--light-gray);
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  transition: var(--transition);
+}
+
+input:focus, textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--gray);
+  opacity: 0.7;
+}
+
+button {
+  padding: 1rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+button[type="submit"], #logoutBtn {
+  background-color: var(--primary);
+  color: white;
+}
+
+button[type="submit"]:hover, #logoutBtn:hover {
+  background-color: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.register-text, .login-text {
+  text-align: center;
+  color: var(--gray);
+  margin-top: 1rem;
+}
+
+.register-button, .login-button {
+  background-color: white;
+  color: var(--primary);
+  border: 2px solid var(--primary);
+  margin-top: 0.5rem;
+}
+
+.register-button:hover, .login-button:hover {
+  background-color: var(--primary-light);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* ===== Dashboard Styles ===== */
+#dashboardContainer {
+  display: none;
   width: 100%;
 }
 
-/* Form container */
-.container {
-  flex: 1;
-  padding: 40px 30px;
-  text-align: center;
+#dashboardContainer > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--light-gray);
 }
 
-/* Image container */
+#patientsSection, #chatSection, #registerSection {
+  background: var(--card-bg);
+  padding: 1.5rem;
+  border-radius: var(--radius-md);
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+#patientsSection:hover, #chatSection:hover, #registerSection:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+#patientsSection h3, #chatSection h3, #registerSection h3 {
+  color: var(--primary);
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+#patientsSection h3::before, #chatSection h3::before, #registerSection h3::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: var(--primary);
+  border-radius: 50%;
+}
+
+#patientList {
+  list-style: none;
+}
+
+#patientList li {
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  background: var(--light);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--primary);
+  transition: var(--transition);
+}
+
+#patientList li:hover {
+  background: var(--light-gray);
+  transform: translateX(5px);
+}
+
+#chatMessages {
+  height: 200px;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: var(--light);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--light-gray);
+}
+
+#chatInput {
+  min-height: 100px;
+  resize: vertical;
+  margin-bottom: 1rem;
+}
+
+/* ===== Image Container ===== */
 .image-container {
   flex: 1;
-  background: #e0f7fa;
   display: flex;
-  justify-content: center;
   align-items: center;
-  padding: 20px;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
 }
 
 .image-container img {
   max-width: 100%;
   height: auto;
-  border-radius: 10px;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.2));
+  z-index: 2;
+  position: relative;
 }
 
-/* Heading */
-h2 {
-  margin-bottom: 20px;
-  color: #333;
-  font-size: 28px;
-  font-weight: 700;
+.image-container::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+  z-index: 1;
+  animation: rotate 20s linear infinite;
 }
 
-/* Form styles */
-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+/* ===== Animations ===== */
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-input {
-  width: 80%;
-  padding: 12px 15px;
-  margin: 10px 0;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 16px;
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
-input:focus {
-  outline: none;
-  border-color: #4dd0e1;
-}
-
-/* Login button */
-button[type="submit"] {
-  width: 80%;
-  margin-top: 20px;
-  padding: 12px;
-  background: linear-gradient(135deg, #26c6da, #00acc1);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 18px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.3s ease, transform 0.3s ease;
-}
-
-button[type="submit"]:hover {
-  background: linear-gradient(135deg, #00acc1, #26c6da);
-  transform: scale(1.05);
-}
-
-/* Register section */
-.register-text {
-  margin-top: 20px;
-  font-size: 14px;
-  color: #666;
-}
-
-.register-button {
-  margin-top: 10px;
-  padding: 10px;
-  background: transparent;
-  color: #00acc1;
-  border: 2px solid #00acc1;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.register-button:hover {
-  background: #00acc1;
-  color: white;
-}
-
-/* Mobile responsiveness */
-@media (max-width: 768px) {
+/* ===== Responsive Design ===== */
+@media (max-width: 992px) {
   .main-container {
     flex-direction: column;
+    min-height: auto;
   }
-
+  
   .image-container {
     display: none;
   }
-
+  
   .container {
-    padding: 30px 20px;
+    padding: 2rem;
   }
 }
 
-@media (max-width: 400px) {
-  .container {
+@media (max-width: 768px) {
+  #dashboardContainer > div:first-child {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  #logoutBtn {
     width: 100%;
-    padding: 20px;
+    margin-top: 1rem;
   }
+}
 
-  h2 {
-    font-size: 24px;
+@media (max-width: 480px) {
+  .container {
+    padding: 1.5rem;
   }
+  
+  .container h2 {
+    font-size: 1.5rem;
+  }
+  
+  input, button, textarea {
+    padding: 0.8rem;
+  }
+}
+
+/* ===== Form Validation ===== */
+input:invalid, textarea:invalid {
+  border-color: var(--danger);
+}
+
+input:valid:not(:placeholder-shown), textarea:valid:not(:placeholder-shown) {
+  border-color: var(--secondary);
+}
+
+/* ===== Loading State ===== */
+.loading {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+  margin-right: 10px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ===== Chat Messages ===== */
+.message {
+  padding: 0.5rem 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: var(--radius-sm);
+  max-width: 80%;
+}
+
+.message.doctor {
+  background-color: var(--primary-light);
+  color: white;
+  margin-left: auto;
+  border-bottom-right-radius: 0;
+}
+
+.message.patient {
+  background-color: var(--light-gray);
+  margin-right: auto;
+  border-bottom-left-radius: 0;
+}
+
+.message-header {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  font-size: 0.85rem;
 }
