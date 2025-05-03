@@ -438,7 +438,7 @@
         </h2>
         <div class="message">
           <div class="message-header">
-            <span>From: Dr. Smith</span>
+            <span>From: Your Doctor</span>
             <span>May 10, 2025</span>
           </div>
           <div class="message-content">
@@ -447,7 +447,7 @@
         </div>
         <div class="message">
           <div class="message-header">
-            <span>From: Nutritionist</span>
+            <span>From: Your Doctor</span>
             <span>May 8, 2025</span>
           </div>
           <div class="message-content">
@@ -464,10 +464,10 @@
           </svg>
           Pregnancy Progress
         </h2>
-        <p>Your estimated due date is: <span id="due-date">September 15, 2025</span></p>
-        <p>Weeks pregnant: <strong>22 weeks</strong></p>
-        <p>Baby's growth: The baby is the size of a grapefruit.</p>
-        <p>Next milestone: Your glucose screening test is coming up soon.</p>
+        <p>Your estimated due date is: <span id="due-date">Calculating...</span></p>
+        <p>Months pregnant: <strong id="months-pregnant">Calculating...</strong></p>
+        <p>Baby's growth: <span id="baby-growth">Calculating...</span></p>
+        <p>Next milestone: <span id="next-milestone">Calculating...</span></p>
       </section>
 
       <section id="healthTracker" class="fade-in">
@@ -480,7 +480,7 @@
         <p>Weight: <strong>65 kg</strong> (+2 kg from last month)</p>
         <p>Blood Pressure: <strong>120/80 mmHg</strong> (normal)</p>
         <p>Last checkup: May 5, 2025 - All normal</p>
-        <p>Next appointment: <strong>May 20, 2025</strong> with Dr. Smith</p>
+        <p>Next appointment: <strong>May 20, 2025</strong> with Your Doctor</p>
       </section>
     </main>
   </div>
@@ -498,6 +498,60 @@
     // This is just fallback basic functionality
     // Your main logic should be in dashboard.js
     document.addEventListener('DOMContentLoaded', function() {
+      // Calculate pregnancy progress based on months
+      function calculatePregnancyProgress() {
+        // Get current date
+        const currentDate = new Date();
+        
+        // For demo purposes, we'll assume pregnancy started 3 months ago
+        // In a real app, this would come from user data
+        const pregnancyStartMonth = 2; // March (0-indexed)
+        const pregnancyStartYear = 2025;
+        
+        // Calculate months pregnant
+        let monthsPregnant = currentDate.getMonth() - pregnancyStartMonth;
+        if (monthsPregnant < 0) {
+          monthsPregnant += 12;
+        }
+        
+        // Add 1 to the month count (as per your requirement)
+        monthsPregnant += 1;
+        
+        // Calculate due date (approximately 9 months from start)
+        const dueDate = new Date(pregnancyStartYear, pregnancyStartMonth + 9, 15);
+        const dueDateFormatted = dueDate.toLocaleDateString('en-US', { 
+          month: 'long', 
+          day: 'numeric', 
+          year: 'numeric' 
+        });
+        
+        // Get baby size based on month
+        const babySizes = [
+          "a poppy seed", "a lentil", "a blueberry", "a kidney bean", 
+          "a grape", "a kumquat", "a fig", "a lemon", 
+          "a lime", "a small banana", "a large banana", "a plum"
+        ];
+        const babySize = babySizes[Math.min(monthsPregnant - 1, babySizes.length - 1)];
+        
+        // Get next milestone
+        let nextMilestone = "";
+        if (monthsPregnant < 3) {
+          nextMilestone = "First trimester screening";
+        } else if (monthsPregnant < 6) {
+          nextMilestone = "Anatomy ultrasound scan";
+        } else if (monthsPregnant < 9) {
+          nextMilestone = "Glucose screening test";
+        } else {
+          nextMilestone = "Final preparations for delivery";
+        }
+        
+        // Update the DOM
+        document.getElementById('due-date').textContent = dueDateFormatted;
+        document.getElementById('months-pregnant').textContent = `${monthsPregnant} month${monthsPregnant !== 1 ? 's' : ''}`;
+        document.getElementById('baby-growth').textContent = `The baby is the size of ${babySize}.`;
+        document.getElementById('next-milestone').textContent = nextMilestone;
+      }
+      
       // If dashboard.js fails to load, this basic functionality will work
       if (typeof firebase === 'undefined') {
         console.error('Firebase SDK not loaded');
@@ -506,6 +560,9 @@
           alert('Firebase not loaded - simulated logout\nRedirecting to login...');
           window.location.href = 'login.html';
         });
+        
+        // Calculate pregnancy progress
+        calculatePregnancyProgress();
       }
 
       // Basic button functionality

@@ -1,68 +1,225 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Maternal Care Registration</title>
-  <link rel="stylesheet" href="mother-registration-style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mother Registration</title>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+  <style>
+    :root {
+      --primary: #3a7bd5;
+      --accent: #e74c3c;
+      --light: #ecf0f1;
+      --dark: #2c3e50;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+    
+    body {
+      background-color: #f5f7fa;
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .registration-container {
+      width: 100%;
+      max-width: 800px;
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    h1 {
+      color: var(--primary);
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    
+    .form-row {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    input, textarea, select {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+    
+    textarea {
+      min-height: 100px;
+    }
+    
+    button {
+      width: 100%;
+      padding: 1rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+    
+    button:hover {
+      background: #2c6bc5;
+    }
+    
+    @media (max-width: 600px) {
+      .form-row {
+        flex-direction: column;
+        gap: 0;
+      }
+      
+      .registration-container {
+        padding: 1rem;
+        margin: 1rem;
+      }
+    }
+  </style>
 </head>
 <body>
-  <!-- Top Banner -->
-  <div class="top-section">
-    <div class="header-container">
-      <h1>Maternal Care Hub</h1>
-      <img src="pregnacare.png" alt="Pregnacare Logo" class="logo"/>
-    </div>
-    <div class="wave-background"></div>
-  </div>
-
-  <!-- Main Content -->
-  <div class="main-content">
-    <!-- Registration Form -->
-    <div class="form-section">
-      <div class="form-container">
-        <h2>Mother Registration Form</h2>
-        <form id="mother-registration-form">
-          <div class="form-row">
-            <input type="text" id="firstName" placeholder="First Name" required />
-            <input type="text" id="lastName" placeholder="Last Name" required />
-          </div>
-
-          <div class="form-row">
-            <input type="number" id="age" placeholder="Age" required />
-            <input type="date" id="dob" placeholder="Date of Birth" required />
-          </div>
-
-          <div class="form-row">
-            <input type="text" id="husbandName" placeholder="Husband's Name" required />
-            <input type="text" id="trimester" placeholder="Trimester (e.g., 1st, 2nd, 3rd)" required />
-          </div>
-
-          <div class="form-row">
-            <input type="number" id="month" placeholder="Pregnancy Month (1-9)" required />
-          </div>
-
-          <div class="form-row">
-            <input type="text" id="doctorName" placeholder="Doctor's Name" required />
-            <input type="text" id="doctorId" placeholder="Doctor's ID" required />
-          </div>
-
-          <textarea id="address" placeholder="Address" required></textarea>
-          <textarea id="medicalHistory" placeholder="Medical History (if any)"></textarea>
-
-          <button type="submit">Register</button>
-        </form>
+  <div class="registration-container">
+    <h1>Mother Registration</h1>
+    <form id="mother-registration-form">
+      <div class="form-row">
+        <input type="text" id="firstName" placeholder="First Name" required>
+        <input type="text" id="lastName" placeholder="Last Name" required>
       </div>
-    </div>
-
-    <!-- Side Image or Animation -->
-    <div class="image-section">
-      <img src="mother pic.jpg" alt="Pregnant Mother" class="pregnant-image" />
-      <div class="floating-bubbles"></div>
-    </div>
+      
+      <div class="form-row">
+        <input type="number" id="age" placeholder="Age" required>
+        <input type="date" id="dob" placeholder="Date of Birth" required>
+      </div>
+      
+      <div class="form-row">
+        <input type="text" id="husbandName" placeholder="Husband's Name" required>
+        <select id="trimester" required>
+          <option value="">Select Trimester</option>
+          <option value="1st">First Trimester</option>
+          <option value="2nd">Second Trimester</option>
+          <option value="3rd">Third Trimester</option>
+        </select>
+      </div>
+      
+      <div class="form-row">
+        <select id="month" required>
+          <option value="">Select Pregnancy Month</option>
+          <option value="1">Month 1</option>
+          <option value="2">Month 2</option>
+          <option value="3">Month 3</option>
+          <option value="4">Month 4</option>
+          <option value="5">Month 5</option>
+          <option value="6">Month 6</option>
+          <option value="7">Month 7</option>
+          <option value="8">Month 8</option>
+          <option value="9">Month 9</option>
+        </select>
+      </div>
+      
+      <div class="form-row">
+        <input type="text" id="doctorName" placeholder="Doctor's Name" required>
+        <input type="text" id="doctorId" placeholder="Doctor's ID" required>
+      </div>
+      
+      <textarea id="address" placeholder="Address" required></textarea>
+      <textarea id="medicalHistory" placeholder="Medical History (if any)"></textarea>
+      
+      <button type="submit">Register</button>
+    </form>
   </div>
 
-  <!-- ✅ Use module type to allow ES6 imports in JS -->
-  <script type="module" src="mother-registration.js"></script>
+  <script>
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyAAdjeTlV3QD7RNuhJeuIo8Vp2tftjbE1k",
+      authDomain: "pregnacare-70aed.firebaseapp.com",
+      projectId: "pregnacare-70aed",
+      storageBucket: "pregnacare-70aed.appspot.com",
+      messagingSenderId: "375969305451",
+      appId: "1:375969305451:web:82d4e1f90264cfa3f6f22e"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // Handle form submission
+    document.getElementById('mother-registration-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const user = auth.currentUser;
+      if (!user) {
+        alert("Please sign in first!");
+        return;
+      }
+
+      const uid = user.uid;
+      const formData = {
+        fname: document.getElementById('firstName').value.trim(),
+        lname: document.getElementById('lastName').value.trim(),
+        age: document.getElementById('age').value.trim(),
+        dob: document.getElementById('dob').value,
+        husbandName: document.getElementById('husbandName').value.trim(),
+        trimester: document.getElementById('trimester').value,
+        month: document.getElementById('month').value,
+        doctorName: document.getElementById('doctorName').value.trim(),
+        doctorId: document.getElementById('doctorId').value.trim(),
+        address: document.getElementById('address').value.trim(),
+        medicalHistory: document.getElementById('medicalHistory').value.trim(),
+        email: user.email || "",
+        role: "mother",
+        registrationDate: new Date(),
+        createdAt: new Date()
+      };
+
+      try {
+        // Store mother data
+        await db.collection("women").doc(uid).set(formData);
+
+        // Link to doctor if exists
+        const doctorRef = db.collection("doctors").doc(formData.doctorId);
+        const doctorSnap = await doctorRef.get();
+
+        if (doctorSnap.exists) {
+          await doctorRef.update({
+            patients: firebase.firestore.FieldValue.arrayUnion({
+              motherId: uid,
+              name: `${formData.fname} ${formData.lname}`,
+              email: formData.email,
+              trimester: formData.trimester,
+              month: formData.month,
+              joinedDate: new Date()
+            })
+          });
+          alert("Registration successful and linked with doctor!");
+        } else {
+          alert("Doctor ID not found. Patient registered, but doctor not linked.");
+        }
+
+        // Redirect to mother dashboard
+        window.location.href = "dashboard.html";
+      } catch (error) {
+        console.error("Registration error:", error);
+        alert("Registration failed: " + error.message);
+      }
+    });
+  </script>
 </body>
 </html>
